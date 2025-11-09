@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Калькулятор Мякотей</title>
   <style>
-    /* Фон — чистый тёмно-серый */
+    /* Общий фон — тёмный */
     body {
       margin: 0;
       padding: 0;
-      background: #121216;
+      background: #0f0f14;
       color: #f0f0f0;
       font-family: 'Segoe UI', 'Inter', sans-serif;
-      overflow: hidden;
-      height: 100vh;
+      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    /* Контейнер частиц */
+    /* Частицы на общем фоне */
     #particles-canvas {
       position: fixed;
       top: 0;
@@ -31,16 +31,15 @@
       z-index: 2;
       max-width: 1100px;
       width: 100%;
-      background: rgba(20, 20, 25, 0.92);
+      background: rgba(18, 18, 24, 0.85);
       backdrop-filter: blur(10px);
       padding: 30px;
       border-radius: 22px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
       margin: 20px auto;
       box-sizing: border-box;
     }
 
-    /* Остальные стили — без изменений (с жирными шрифтами и неоном) */
     h1 {
       text-align: center;
       font-size: 2.7rem;
@@ -109,11 +108,23 @@
       align-items: center;
       padding: 24px 18px;
       border-radius: 20px;
-      background: rgba(30, 30, 38, 0.75);
       position: relative;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden; /* важно для canvas */
     }
 
+    /* Canvas внутри блока */
+    .item-bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      border-radius: 20px;
+    }
+
+    /* Градиентная рамка по цвету мякоти */
     .item::before {
       content: '';
       position: absolute;
@@ -127,19 +138,15 @@
       opacity: 0.75;
     }
 
-    #item-slastena .item-name { color: #4a90e2; }
-    #item-slastena::before { --grad1: #4a90e2; --grad2: #1e5799; }
+    /* Названия — крупнее и с неоном */
+    .item-name {
+      font-size: 1.35rem; /* увеличено */
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 0 8px var(--glow-color);
+    }
 
-    #item-solevika .item-name { color: #f0f0f0; }
-    #item-solevika::before { --grad1: #f0f0f0; --grad2: #c0c0c0; }
-
-    #item-kuborbuz .item-name { color: #ff416c; }
-    #item-kuborbuz::before { --grad1: #ff416c; --grad2: #ff4b2b; }
-
-    #item-limonnik .item-name { color: #ffd700; }
-    #item-limonnik::before { --grad1: #ffd700; --grad2: #ffb700; }
-
-    /* Неон для надписей */
+    /* Неон для надписей полей */
     #item-slastena .input-label,
     #item-slastena-sell .input-label {
       color: #4a90e2;
@@ -161,13 +168,7 @@
       text-shadow: 0 0 5px rgba(255,215,0,0.6), 0 0 10px rgba(255,215,0,0.3);
     }
 
-    .item-name {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-shadow: 0 0 8px var(--glow-color);
-    }
-
+    /* Иконки */
     .item-icon-container {
       width: 85px;
       height: 85px;
@@ -205,7 +206,7 @@
       padding: 12px;
       border-radius: 10px;
       border: 1px solid #444;
-      background: rgba(40, 40, 48, 0.7);
+      background: rgba(30, 30, 40, 0.6);
       color: white;
       font-size: 1.05rem;
       text-align: center;
@@ -265,7 +266,7 @@
     .result {
       text-align: center;
       padding: 20px;
-      background: rgba(35, 35, 43, 0.7);
+      background: rgba(25, 25, 35, 0.7);
       border-radius: 16px;
       font-size: 1.5rem;
       font-weight: 800;
@@ -281,7 +282,7 @@
     }
 
     .summary-card {
-      background: rgba(35, 35, 43, 0.7);
+      background: rgba(25, 25, 35, 0.7);
       padding: 18px;
       border-radius: 14px;
       text-align: center;
@@ -317,7 +318,7 @@
   </style>
 </head>
 <body>
-  <!-- Холст для частиц -->
+  <!-- Общий фон — частицы -->
   <canvas id="particles-canvas"></canvas>
 
   <div class="container">
@@ -333,6 +334,7 @@
     <div id="buy-tab" class="tab-content active">
       <div class="items-row">
         <div class="item" id="item-slastena">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="slastena.png" alt="Мякоть сластены" class="item-icon" />
           </div>
@@ -348,6 +350,7 @@
         </div>
 
         <div class="item" id="item-solevika">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="solevika.png" alt="Мякоть солевика" class="item-icon" />
           </div>
@@ -363,6 +366,7 @@
         </div>
 
         <div class="item" id="item-kuborbuz">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="kuborbuz.png" alt="Мякоть куборбуза" class="item-icon" />
           </div>
@@ -378,6 +382,7 @@
         </div>
 
         <div class="item" id="item-limonnik">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="limon.png" alt="Мякоть лимонника" class="item-icon" />
           </div>
@@ -405,6 +410,7 @@
     <div id="sell-tab" class="tab-content">
       <div class="items-row">
         <div class="item" id="item-slastena-sell">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="slastena.png" alt="Мякоть сластены" class="item-icon" />
           </div>
@@ -424,6 +430,7 @@
         </div>
 
         <div class="item" id="item-solevika-sell">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="solevika.png" alt="Мякоть солевика" class="item-icon" />
           </div>
@@ -443,6 +450,7 @@
         </div>
 
         <div class="item" id="item-kuborbuz-sell">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="kuborbuz.png" alt="Мякоть куборбуза" class="item-icon" />
           </div>
@@ -462,6 +470,7 @@
         </div>
 
         <div class="item" id="item-limonnik-sell">
+          <canvas class="item-bg-canvas"></canvas>
           <div class="item-icon-container">
             <img src="limon.png" alt="Мякоть лимонника" class="item-icon" />
           </div>
@@ -504,133 +513,9 @@
   </div>
 
   <script>
-    // === Лёгкий скрипт частиц (без библиотек) ===
+    // === Фон с частицами (общий) ===
     (function() {
       const canvas = document.getElementById('particles-canvas');
       const ctx = canvas.getContext('2d');
       let particles = [];
-      const particleCount = 80; // количество частиц
-
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-
-      class Particle {
-        constructor() {
-          this.x = Math.random() * canvas.width;
-          this.y = Math.random() * canvas.height;
-          this.size = Math.random() * 1.2 + 0.3; // 0.3–1.5px
-          this.speedX = (Math.random() - 0.5) * 0.3; // очень медленно
-          this.speedY = (Math.random() - 0.5) * 0.3;
-          this.opacity = Math.random() * 0.4 + 0.1; // 10–50% прозрачности
-        }
-
-        update() {
-          this.x += this.speedX;
-          this.y += this.speedY;
-
-          // Отскок от краёв
-          if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-          if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-        }
-
-        draw() {
-          ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      function initParticles() {
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-          particles.push(new Particle());
-        }
-      }
-
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
-        }
-        requestAnimationFrame(animate);
-      }
-
-      window.addEventListener('resize', () => {
-        resizeCanvas();
-        initParticles();
-      });
-
-      resizeCanvas();
-      initParticles();
-      animate();
-    })();
-
-    // === Логика калькулятора ===
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      if (tab === 'buy') {
-        document.getElementById('buy-tab').classList.add('active');
-        document.querySelector('.tab-btn').classList.add('active');
-        calculateBuyTotal();
-      } else if (tab === 'sell') {
-        document.getElementById('sell-tab').classList.add('active');
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        calculateSellProfit();
-      }
-    }
-
-    function calculateBuyTotal() {
-      const items = ['slastena', 'solevika', 'kuborbuz', 'limonnik'];
-      let total = 0;
-      items.forEach(id => {
-        const qty = parseFloat(document.getElementById(`buy-qty-${id}`).value) || 0;
-        const price = parseFloat(document.getElementById(`buy-price-${id}`).value) || 0;
-        total += qty * price;
-      });
-      document.getElementById('buy-total').textContent = `Итого закупки: ${total.toFixed(2)} ₽`;
-    }
-
-    function resetBuy() {
-      ['slastena', 'solevika', 'kuborbuz', 'limonnik'].forEach(id => {
-        document.getElementById(`buy-qty-${id}`).value = '0';
-        document.getElementById(`buy-price-${id}`).value = '0';
-      });
-      calculateBuyTotal();
-    }
-
-    function calculateSellProfit() {
-      const items = ['slastena', 'solevika', 'kuborbuz', 'limonnik'];
-      let revenue = 0, cost = 0;
-      items.forEach(id => {
-        const c = parseFloat(document.getElementById(`sell-cost-${id}`).value) || 0;
-        const s = parseFloat(document.getElementById(`sell-price-${id}`).value) || 0;
-        const q = parseInt(document.getElementById(`sell-qty-${id}`).value) || 0;
-        cost += c * q;
-        revenue += s * q;
-      });
-      const profit = revenue - cost;
-      document.getElementById('sell-revenue').textContent = revenue.toFixed(2) + ' ₽';
-      document.getElementById('sell-cost').textContent = cost.toFixed(2) + ' ₽';
-      const profitEl = document.getElementById('sell-profit');
-      profitEl.textContent = profit.toFixed(2) + ' ₽';
-      profitEl.className = 'summary-value ' + (profit >= 0 ? 'profit-positive' : 'profit-negative');
-    }
-
-    function resetSell() {
-      ['slastena', 'solevika', 'kuborbuz', 'limonnik'].forEach(id => {
-        document.getElementById(`sell-cost-${id}`).value = '0';
-        document.getElementById(`sell-price-${id}`).value = '0';
-        document.getElementById(`sell-qty-${id}`).value = '0';
-      });
-      calculateSellProfit();
-    }
-
-    calculateBuyTotal();
-  </script>
-</body>
-</html>
+      const particleCount
