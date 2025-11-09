@@ -172,11 +172,48 @@
     }
 
     .input-label {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-      color: #bbb;
-    }
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  /* Общий цвет будет перезаписан специфичными правилами ниже */
+}
+
+/* === Неоновые надписи по цвету мякоти === */
+#item-slastena .input-label,
+#item-slastena-sell .input-label {
+  color: #4a90e2;
+  text-shadow:
+    0 0 5px rgba(74, 144, 226, 0.6),
+    0 0 10px rgba(74, 144, 226, 0.4),
+    0 0 15px rgba(74, 144, 226, 0.2);
+}
+
+#item-solevika .input-label,
+#item-solevika-sell .input-label {
+  color: #f0f0f0;
+  text-shadow:
+    0 0 5px rgba(240, 240, 240, 0.5),
+    0 0 10px rgba(240, 240, 240, 0.3),
+    0 0 15px rgba(240, 240, 240, 0.15);
+}
+
+#item-kuborbuz .input-label,
+#item-kuborbuz-sell .input-label {
+  color: #ff416c;
+  text-shadow:
+    0 0 5px rgba(255, 65, 108, 0.6),
+    0 0 10px rgba(255, 65, 108, 0.4),
+    0 0 15px rgba(255, 65, 108, 0.2);
+}
+
+#item-limonnik .input-label,
+#item-limonnik-sell .input-label {
+  color: #ffd700;
+  text-shadow:
+    0 0 5px rgba(255, 215, 0, 0.6),
+    0 0 10px rgba(255, 215, 0, 0.4),
+    0 0 15px rgba(255, 215, 0, 0.2);
+}
 
     .input-field {
       width: 100%;
