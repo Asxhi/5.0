@@ -12,17 +12,8 @@
             --text-primary: #ffffff;
             --text-secondary: #cccccc;
             --accent-yellow: #ffeb3b;
-            --accent-red: #ff5722;
-            --accent-purple: #9c27b0;
             --accent-blue: #2196f3;
             --accent-green: #4caf50;
-            --accent-gray: #9e9e9e;
-            --glow-yellow: 0 0 10px rgba(255,235,59,0.6);
-            --glow-red: 0 0 10px rgba(255,87,34,0.6);
-            --glow-purple: 0 0 10px rgba(156,39,176,0.6);
-            --glow-blue: 0 0 10px rgba(33,150,243,0.6);
-            --glow-green: 0 0 10px rgba(76,175,80,0.6);
-            --glow-gray: 0 0 10px rgba(158,158,158,0.6);
         }
 
         * {
@@ -41,38 +32,57 @@
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 15px;
-            background: linear-gradient(to right, var(--accent-yellow), var(--accent-purple));
+            background: linear-gradient(to right, var(--accent-yellow), var(--accent-blue));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 5px rgba(255,255,255,0.3);
         }
 
-        .add-item-btn {
-            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
+        .selector {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-glow);
+        }
+
+        .selector h2 {
+            margin-bottom: 12px;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .item-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 0 12px rgba(33,150,243,0.5);
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+            user-select: none;
+            transition: background 0.2s;
         }
 
-        .add-item-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 18px rgba(33,150,243,0.8);
+        .item-check:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .item-check input {
+            margin: 0;
         }
 
         .container {
@@ -88,45 +98,12 @@
             padding: 15px;
             border: 1px solid var(--border-glow);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 87, 34, 0.2);
-            color: white;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-
-        .delete-btn:hover {
-            background: rgba(255, 87, 34, 0.4);
-            opacity: 1;
         }
 
         .item-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -138,18 +115,18 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.1);
+            background-color: #1a1a22;
         }
 
         .item-name {
             font-weight: bold;
             font-size: 1.1rem;
-            text-shadow: 0 0 3px currentColor;
         }
 
         .input-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .input-label {
@@ -161,22 +138,22 @@
 
         .input-field {
             width: 100%;
-            padding: 8px 12px;
+            padding: 9px 12px;
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
             border-radius: 6px;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--accent-yellow);
-            box-shadow: 0 0 5px rgba(255,235,59,0.3);
+            box-shadow: 0 0 6px rgba(255,235,59,0.4);
         }
 
         .result {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
             color: var(--accent-yellow);
             text-align: center;
@@ -184,7 +161,6 @@
             padding: 10px;
             background: rgba(255,235,59,0.1);
             border-radius: 6px;
-            border-left: 4px solid var(--accent-yellow);
         }
 
         .contacts {
@@ -193,7 +169,6 @@
             background: rgba(255,255,255,0.05);
             padding: 8px;
             border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .total-section {
@@ -203,101 +178,50 @@
             text-align: center;
             margin-top: 30px;
             border-top: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         .total-label {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.15rem;
             color: var(--text-secondary);
+        }
+
+        .total-value-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .total-value {
             font-size: 2rem;
             font-weight: bold;
             color: var(--accent-yellow);
-            text-shadow: 0 0 5px rgba(255,235,59,0.5);
         }
 
-        /* Modal styles */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
+        .copy-btn {
+            background: rgba(33,150,243,0.2);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 0 25px rgba(0,0,0,0.6);
-        }
-
-        .modal h2 {
-            margin-bottom: 20px;
-            color: var(--accent-blue);
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: white;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-primary {
-            background: var(--accent-blue);
-            color: white;
+        .copy-btn:hover {
+            background: rgba(33,150,243,0.3);
+            transform: scale(1.1);
         }
 
-        .btn-secondary {
-            background: #555;
-            color: white;
+        .copy-btn:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 600px) {
@@ -310,171 +234,165 @@
 <body>
     <div class="header">
         <h1>Игровой калькулятор</h1>
-        <button class="add-item-btn" id="open-modal">+ Добавить предмет</button>
     </div>
 
-    <div class="container" id="items-container">
-        <!-- Динамические блоки -->
+    <div class="selector">
+        <h2>Выберите предметы для расчёта:</h2>
+        <div class="items-list" id="selector-list"></div>
     </div>
+
+    <div class="container" id="items-container"></div>
 
     <div class="total-section">
         <div class="total-label">Общая стоимость:</div>
-        <div class="total-value" id="total-cost">0</div>
-    </div>
-
-    <!-- Модальное окно -->
-    <div class="modal" id="add-item-modal">
-        <div class="modal-content">
-            <h2>Добавить новый предмет</h2>
-            <div class="form-group">
-                <label for="item-name">Название предмета</label>
-                <input type="text" id="item-name" placeholder="Например: Зелье невидимости">
-            </div>
-            <div class="form-group">
-                <label for="item-image">URL изображения</label>
-                <input type="url" id="item-image" placeholder="https://example.com/icon.png">
-            </div>
-            <div class="form-group">
-                <label for="item-price">Цена за штуку (по умолчанию)</label>
-                <input type="number" id="item-price" value="1000" min="0" step="100">
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" id="cancel-btn">Отмена</button>
-                <button class="btn btn-primary" id="save-btn">Добавить</button>
-            </div>
+        <div class="total-value-container">
+            <div class="total-value" id="total-cost">0</div>
+            <button class="copy-btn" id="copy-total" title="Копировать сумму">📋</button>
         </div>
     </div>
 
     <script>
-        // Загрузка сохранённых предметов
-        let items = JSON.parse(localStorage.getItem('gameItems')) || [];
+        // 🔧 СПИСОК ТВОИХ ПРЕДМЕТОВ — цены можно менять!
+        const ITEMS = [
+            { id: 'dust', name: 'Аномальная пыль', price: 500 },
+            { id: 'tool', name: 'Мультитул', price: 3000 },
+            { id: 'yeast', name: 'Дрожжи', price: 800 },
+            { id: 'hoof', name: 'Копыто сильного кабана', price: 1200 },
+            { id: 'bolts', name: 'Набор болтов', price: 700 },
+            { id: 'wormwood', name: 'Янтарная полынь', price: 1500 },
+            { id: 'chertocvet', name: 'Чертоцвет', price: 2000 },
+            { id: 'ammonia', name: 'Аммиак', price: 900 },
+            { id: 'lemon', name: 'Мякоть лимонника', price: 1000 },
+            { id: 'slant', name: 'Мякоть сластены', price: 8000 },
+            { id: 'salt', name: 'Мякоть солевика', price: 500 },
+            { id: 'cube', name: 'Мякоть куборбуза', price: 2500 },
+            { id: 'spices', name: 'Набор специй', price: 1100 },
+            { id: 'plasma', name: 'Аномальная плазма', price: 4000 },
+            { id: 'gnosis', name: 'Гнозис', price: 10000 },
+            { id: 'fish', name: 'Полутухлая рыба', price: 300 },
+            { id: 'millet', name: 'Банка с пшеном', price: 400 },
+            { id: 'solution', name: 'Колба с раствором', price: 1300 },
+            { id: 'acid', name: 'Азотная кислота', price: 1800 },
+            { id: 'meat', name: 'Мясо', price: 250 }
+        ];
 
+        // Функция преобразования названия в имя файла
+        function nameToFilename(name) {
+            return name
+                .toLowerCase()
+                .replace(/ё/g, 'е')
+                .replace(/[^\w\s-]/g, '') // убираем знаки препинания
+                .replace(/\s+/g, '-')       // пробелы → дефисы
+                + '.png';
+        }
+
+        // DOM
+        const selectorList = document.getElementById('selector-list');
         const container = document.getElementById('items-container');
         const totalCostElement = document.getElementById('total-cost');
-        const modal = document.getElementById('add-item-modal');
-        const openModalBtn = document.getElementById('open-modal');
-        const cancelBtn = document.getElementById('cancel-btn');
-        const saveBtn = document.getElementById('save-btn');
+        const copyBtn = document.getElementById('copy-total');
 
-        // Сохранение в localStorage
-        function saveItems() {
-            localStorage.setItem('gameItems', JSON.stringify(items));
-        }
+        let activeItems = new Set();
 
-        // Генерация уникального ID
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        // Рендер одного элемента
-        function renderItem(item) {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.dataset.id = item.id;
-
-            card.innerHTML = `
-                <button class="delete-btn">×</button>
-                <div class="item-header">
-                    <div class="item-icon" style="background-image: url('${item.image || 'data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"%23aaa\" d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/></svg>'}')"></div>
-                    <div class="item-name">${item.name}</div>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Количество:</label>
-                    <input type="number" class="input-field quantity" value="0" min="0" step="1">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Цена за штуку:</label>
-                    <input type="number" class="input-field price" value="${item.price || 1000}" min="0" step="100">
-                </div>
-                <div class="result">0</div>
-                <div class="contacts">Контакты продавца или заметки...</div>
-            `;
-
-            const deleteBtn = card.querySelector('.delete-btn');
-            const quantityInput = card.querySelector('.quantity');
-            const priceInput = card.querySelector('.price');
-            const resultElement = card.querySelector('.result');
-
-            const updateResult = () => {
-                const q = parseInt(quantityInput.value) || 0;
-                const p = parseInt(priceInput.value) || 0;
-                resultElement.textContent = (q * p).toLocaleString();
-                updateTotalCost();
-            };
-
-            deleteBtn.addEventListener('click', () => {
-                items = items.filter(i => i.id !== item.id);
-                saveItems();
-                card.remove();
-                updateTotalCost();
+        // Рендер чекбоксов
+        function renderSelector() {
+            selectorList.innerHTML = '';
+            ITEMS.forEach(item => {
+                const label = document.createElement('label');
+                label.className = 'item-check';
+                label.innerHTML = `
+                    <input type="checkbox" value="${item.id}">
+                    ${item.name}
+                `;
+                const checkbox = label.querySelector('input');
+                checkbox.checked = activeItems.has(item.id);
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        activeItems.add(item.id);
+                    } else {
+                        activeItems.delete(item.id);
+                    }
+                    renderActiveItems();
+                });
+                selectorList.appendChild(label);
             });
-
-            quantityInput.addEventListener('input', updateResult);
-            priceInput.addEventListener('input', updateResult);
-
-            container.appendChild(card);
         }
 
-        // Рендер всех элементов
-        function renderAllItems() {
+        // Рендер активных карточек
+        function renderActiveItems() {
             container.innerHTML = '';
-            items.forEach(renderItem);
-            updateTotalCost();
+            ITEMS.forEach(item => {
+                if (!activeItems.has(item.id)) return;
+
+                const filename = nameToFilename(item.name);
+                const iconPath = `icons/${filename}`;
+
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.dataset.id = item.id;
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-icon" style="background-image: url('${iconPath}')"></div>
+                        <div class="item-name">${item.name}</div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Количество:</label>
+                        <input type="number" class="input-field quantity" min="0" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Цена за штуку:</label>
+                        <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
+                    </div>
+                    <div class="result">0</div>
+                    <div class="contacts">Контакты или заметки...</div>
+                `;
+
+                const qInput = card.querySelector('.quantity');
+                const pInput = card.querySelector('.price');
+                const result = card.querySelector('.result');
+
+                qInput.addEventListener('focus', () => qInput.select());
+
+                const update = () => {
+                    const q = parseInt(qInput.value) || 0;
+                    const p = parseInt(pInput.value) || 0;
+                    result.textContent = (q * p).toLocaleString();
+                    updateTotal();
+                };
+
+                qInput.addEventListener('input', update);
+                pInput.addEventListener('input', update);
+
+                container.appendChild(card);
+            });
+            updateTotal();
         }
 
-        // Обновление общей суммы
-        function updateTotalCost() {
+        function updateTotal() {
             let total = 0;
             document.querySelectorAll('.result').forEach(el => {
-                const num = parseInt(el.textContent.replace(/,/g, '')) || 0;
-                total += num;
+                const val = parseInt(el.textContent.replace(/,/g, '')) || 0;
+                total += val;
             });
             totalCostElement.textContent = total.toLocaleString();
         }
 
-        // Открытие/закрытие модалки
-        openModalBtn.addEventListener('click', () => modal.classList.add('active'));
-        cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-
-        // Добавление нового предмета
-        saveBtn.addEventListener('click', () => {
-            const name = document.getElementById('item-name').value.trim();
-            const image = document.getElementById('item-image').value.trim();
-            const price = parseInt(document.getElementById('item-price').value) || 1000;
-
-            if (!name) {
-                alert('Пожалуйста, укажите название предмета.');
-                return;
-            }
-
-            const newItem = {
-                id: generateId(),
-                name,
-                image: image || '',
-                price
-            };
-
-            items.push(newItem);
-            saveItems();
-            renderItem(newItem);
-            updateTotalCost();
-
-            // Сброс формы и закрытие
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-image').value = '';
-            document.getElementById('item-price').value = '1000';
-            modal.classList.remove('active');
-        });
-
-        // Закрытие модалки по клику вне контента
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
+        copyBtn.addEventListener('click', async () => {
+            const text = totalCostElement.textContent.replace(/,/g, '');
+            try {
+                await navigator.clipboard.writeText(text);
+                const original = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✓';
+                setTimeout(() => copyBtn.innerHTML = original, 1000);
+            } catch (e) {
+                alert('Не удалось скопировать. Попробуйте вручную.');
             }
         });
 
-        // Инициализация
-        renderAllItems();
+        // Запуск
+        renderSelector();
+        renderActiveItems();
     </script>
 </body>
 </html>
