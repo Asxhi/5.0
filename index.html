@@ -1,521 +1,480 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Калькулятор Мякотей</title>
-  <style>
-    /* Общий фон — тёмный */
-    body {
-      margin: 0;
-      padding: 0;
-      background: #0f0f14;
-      color: #f0f0f0;
-      font-family: 'Segoe UI', 'Inter', sans-serif;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровой калькулятор</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --card-bg: #12121a;
+            --border-glow: rgba(255,255,255,0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --accent-yellow: #ffeb3b;
+            --accent-red: #ff5722;
+            --accent-purple: #9c27b0;
+            --accent-blue: #2196f3;
+            --accent-green: #4caf50;
+            --accent-gray: #9e9e9e;
+            --glow-yellow: 0 0 10px rgba(255,235,59,0.6);
+            --glow-red: 0 0 10px rgba(255,87,34,0.6);
+            --glow-purple: 0 0 10px rgba(156,39,176,0.6);
+            --glow-blue: 0 0 10px rgba(33,150,243,0.6);
+            --glow-green: 0 0 10px rgba(76,175,80,0.6);
+            --glow-gray: 0 0 10px rgba(158,158,158,0.6);
+        }
 
-    /* Частицы на общем фоне */
-    #particles-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .container {
-      position: relative;
-      z-index: 2;
-      max-width: 1100px;
-      width: 100%;
-      background: rgba(18, 18, 24, 0.85);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 22px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-      margin: 20px auto;
-      box-sizing: border-box;
-    }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-    h1 {
-      text-align: center;
-      font-size: 2.7rem;
-      margin-bottom: 10px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #4facfe, #00f2fe);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .subtitle {
-      text-align: center;
-      color: #bbb;
-      margin-bottom: 25px;
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--accent-yellow), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
+        .add-item-btn {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(33,150,243,0.5);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    .tab-btn {
-      padding: 12px 32px;
-      font-size: 1.15rem;
-      font-weight: 700;
-      background: rgba(40, 40, 48, 0.7);
-      border: none;
-      border-radius: 14px;
-      color: #ccc;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
+        .add-item-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(33,150,243,0.8);
+        }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      color: #0f0f13;
-      box-shadow: 0 4px 15px rgba(0, 200, 255, 0.4);
-    }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-    .tab-content {
-      display: none;
-    }
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .tab-content.active {
-      display: block;
-    }
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
 
-    .items-row {
-      display: flex;
-      justify-content: center;
-      gap: 22px;
-      margin-bottom: 35px;
-      flex-wrap: wrap;
-    }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 87, 34, 0.2);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
 
-    .item {
-      flex: 1;
-      min-width: 190px;
-      max-width: 240px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 18px;
-      border-radius: 20px;
-      position: relative;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-      overflow: hidden; /* важно для canvas */
-    }
+        .delete-btn:hover {
+            background: rgba(255, 87, 34, 0.4);
+            opacity: 1;
+        }
 
-    /* Canvas внутри блока */
-    .item-bg-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      border-radius: 20px;
-    }
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-    /* Градиентная рамка по цвету мякоти */
-    .item::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      z-index: -1;
-      border-radius: 22px;
-      background: linear-gradient(45deg, var(--grad1), var(--grad2));
-      opacity: 0.75;
-    }
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-    /* Названия — крупнее и с неоном */
-    .item-name {
-      font-size: 1.35rem; /* увеличено */
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-shadow: 0 0 8px var(--glow-color);
-    }
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-shadow: 0 0 3px currentColor;
+        }
 
-    /* Неон для надписей полей */
-    #item-slastena .input-label,
-    #item-slastena-sell .input-label {
-      color: #4a90e2;
-      text-shadow: 0 0 5px rgba(74,144,226,0.6), 0 0 10px rgba(74,144,226,0.3);
-    }
-    #item-solevika .input-label,
-    #item-solevika-sell .input-label {
-      color: #f0f0f0;
-      text-shadow: 0 0 5px rgba(240,240,240,0.5), 0 0 10px rgba(240,240,240,0.25);
-    }
-    #item-kuborbuz .input-label,
-    #item-kuborbuz-sell .input-label {
-      color: #ff416c;
-      text-shadow: 0 0 5px rgba(255,65,108,0.6), 0 0 10px rgba(255,65,108,0.3);
-    }
-    #item-limonnik .input-label,
-    #item-limonnik-sell .input-label {
-      color: #ffd700;
-      text-shadow: 0 0 5px rgba(255,215,0,0.6), 0 0 10px rgba(255,215,0,0.3);
-    }
+        .input-group {
+            margin-bottom: 10px;
+        }
 
-    /* Иконки */
-    .item-icon-container {
-      width: 85px;
-      height: 85px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
+        .input-label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
 
-    .item-icon {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 12px var(--glow-color));
-    }
+        .input-field {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
 
-    #item-slastena .item-icon,
-    #item-slastena-sell .item-icon { --glow-color: rgba(74,144,226,0.6); }
-    #item-solevika .item-icon,
-    #item-solevika-sell .item-icon { --glow-color: rgba(240,240,240,0.5); }
-    #item-kuborbuz .item-icon,
-    #item-kuborbuz-sell .item-icon { --glow-color: rgba(255,65,108,0.6); }
-    #item-limonnik .item-icon,
-    #item-limonnik-sell .item-icon { --glow-color: rgba(255,215,0,0.6); }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 5px rgba(255,235,59,0.3);
+        }
 
-    .input-label {
-      display: block;
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+        .result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-yellow);
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,235,59,0.1);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-yellow);
+        }
 
-    .input-field {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #444;
-      background: rgba(30, 30, 40, 0.6);
-      color: white;
-      font-size: 1.05rem;
-      text-align: center;
-    }
+        .contacts {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-    .input-field:focus {
-      outline: none;
-      border-color: #666;
-    }
+        .total-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+            border-top: 2px solid rgba(255,255,255,0.1);
+        }
 
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 25px 0;
-      flex-wrap: wrap;
-    }
+        .total-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
 
-    .btn {
-      padding: 14px 30px;
-      border: none;
-      border-radius: 14px;
-      font-size: 1.15rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
+        .total-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-yellow);
+            text-shadow: 0 0 5px rgba(255,235,59,0.5);
+        }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #00c9ff, #0077ff);
-      color: white;
-      box-shadow: 0 4px 20px rgba(0,120,255,0.5);
-    }
-    .btn-primary:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 25px rgba(0,120,255,0.7);
-    }
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
 
-    .btn-profit {
-      background: linear-gradient(135deg, #00c990, #007766);
-      color: white;
-      box-shadow: 0 4px 20px rgba(0,200,144,0.5);
-    }
-    .btn-profit:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 25px rgba(0,200,144,0.7);
-    }
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-    .btn-reset {
-      background: #333;
-      color: #ddd;
-    }
-    .btn-reset:hover {
-      background: #444;
-    }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+        }
 
-    .result {
-      text-align: center;
-      padding: 20px;
-      background: rgba(25, 25, 35, 0.7);
-      border-radius: 16px;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #00f2fe;
-      margin: 20px 0;
-    }
+        .modal h2 {
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            text-align: center;
+        }
 
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin: 25px 0;
-    }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-    .summary-card {
-      background: rgba(25, 25, 35, 0.7);
-      padding: 18px;
-      border-radius: 14px;
-      text-align: center;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
 
-    .summary-label {
-      font-size: 1.05rem;
-      color: #bbb;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+        }
 
-    .summary-value {
-      font-size: 1.45rem;
-      font-weight: 800;
-    }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
-    .revenue { color: #4facfe; }
-    .cost { color: #ff9e6d; }
-    .profit-positive { color: #00ffcc; }
-    .profit-negative { color: #ff6b6b; }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    @media (max-width: 768px) {
-      .items-row {
-        flex-direction: column;
-        align-items: center;
-      }
-      .item {
-        width: 90%;
-        max-width: 400px;
-      }
-    }
-  </style>
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #555;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Общий фон — частицы -->
-  <canvas id="particles-canvas"></canvas>
-
-  <div class="container">
-    <h1>Калькулятор Мякотей</h1>
-    <p class="subtitle">Планируй закупки и анализируй прибыль</p>
-
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('buy')">Закупки</button>
-      <button class="tab-btn" onclick="switchTab('sell')">Продажи и Прибыль</button>
+    <div class="header">
+        <h1>Игровой калькулятор</h1>
+        <button class="add-item-btn" id="open-modal">+ Добавить предмет</button>
     </div>
 
-    <!-- ЗАКУПКИ -->
-    <div id="buy-tab" class="tab-content active">
-      <div class="items-row">
-        <div class="item" id="item-slastena">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="slastena.png" alt="Мякоть сластены" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть сластены</div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="buy-qty-slastena" class="input-field" value="0" min="0" oninput="calculateBuyTotal()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена за шт</label>
-            <input type="number" id="buy-price-slastena" class="input-field" value="0" min="0" step="0.01" oninput="calculateBuyTotal()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-solevika">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="solevika.png" alt="Мякоть солевика" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть солевика</div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="buy-qty-solevika" class="input-field" value="0" min="0" oninput="calculateBuyTotal()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена за шт</label>
-            <input type="number" id="buy-price-solevika" class="input-field" value="0" min="0" step="0.01" oninput="calculateBuyTotal()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-kuborbuz">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="kuborbuz.png" alt="Мякоть куборбуза" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть куборбуза</div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="buy-qty-kuborbuz" class="input-field" value="0" min="0" oninput="calculateBuyTotal()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена за шт</label>
-            <input type="number" id="buy-price-kuborbuz" class="input-field" value="0" min="0" step="0.01" oninput="calculateBuyTotal()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-limonnik">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="limon.png" alt="Мякоть лимонника" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть лимонника</div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="buy-qty-limonnik" class="input-field" value="0" min="0" oninput="calculateBuyTotal()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена за шт</label>
-            <input type="number" id="buy-price-limonnik" class="input-field" value="0" min="0" step="0.01" oninput="calculateBuyTotal()" />
-          </div>
-        </div>
-      </div>
-
-      <div class="result" id="buy-total">Итого закупки: 0.00 ₽</div>
-
-      <div class="buttons">
-        <button class="btn btn-primary" onclick="calculateBuyTotal()">Пересчитать</button>
-        <button class="btn btn-reset" onclick="resetBuy()">Сбросить</button>
-      </div>
+    <div class="container" id="items-container">
+        <!-- Динамические блоки -->
     </div>
 
-    <!-- ПРОДАЖИ -->
-    <div id="sell-tab" class="tab-content">
-      <div class="items-row">
-        <div class="item" id="item-slastena-sell">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="slastena.png" alt="Мякоть сластены" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть сластены</div>
-          <div class="input-group">
-            <label class="input-label">Себестоимость</label>
-            <input type="number" id="sell-cost-slastena" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена продажи</label>
-            <input type="number" id="sell-price-slastena" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="sell-qty-slastena" class="input-field" value="0" min="0" oninput="calculateSellProfit()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-solevika-sell">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="solevika.png" alt="Мякоть солевика" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть солевика</div>
-          <div class="input-group">
-            <label class="input-label">Себестоимость</label>
-            <input type="number" id="sell-cost-solevika" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена продажи</label>
-            <input type="number" id="sell-price-solevika" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="sell-qty-solevika" class="input-field" value="0" min="0" oninput="calculateSellProfit()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-kuborbuz-sell">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="kuborbuz.png" alt="Мякоть куборбуза" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть куборбуза</div>
-          <div class="input-group">
-            <label class="input-label">Себестоимость</label>
-            <input type="number" id="sell-cost-kuborbuz" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена продажи</label>
-            <input type="number" id="sell-price-kuborbuz" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="sell-qty-kuborbuz" class="input-field" value="0" min="0" oninput="calculateSellProfit()" />
-          </div>
-        </div>
-
-        <div class="item" id="item-limonnik-sell">
-          <canvas class="item-bg-canvas"></canvas>
-          <div class="item-icon-container">
-            <img src="limon.png" alt="Мякоть лимонника" class="item-icon" />
-          </div>
-          <div class="item-name">Мякоть лимонника</div>
-          <div class="input-group">
-            <label class="input-label">Себестоимость</label>
-            <input type="number" id="sell-cost-limonnik" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Цена продажи</label>
-            <input type="number" id="sell-price-limonnik" class="input-field" value="0" min="0" step="0.01" oninput="calculateSellProfit()" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Количество</label>
-            <input type="number" id="sell-qty-limonnik" class="input-field" value="0" min="0" oninput="calculateSellProfit()" />
-          </div>
-        </div>
-      </div>
-
-      <div class="summary">
-        <div class="summary-card">
-          <div class="summary-label">Выручка</div>
-          <div class="summary-value revenue" id="sell-revenue">0.00 ₽</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Расходы</div>
-          <div class="summary-value cost" id="sell-cost">0.00 ₽</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Прибыль</div>
-          <div class="summary-value profit-positive" id="sell-profit">0.00 ₽</div>
-        </div>
-      </div>
-
-      <div class="buttons">
-        <button class="btn btn-profit" onclick="calculateSellProfit()">Пересчитать</button>
-        <button class="btn btn-reset" onclick="resetSell()">Сбросить</button>
-      </div>
+    <div class="total-section">
+        <div class="total-label">Общая стоимость:</div>
+        <div class="total-value" id="total-cost">0</div>
     </div>
-  </div>
 
-  <script>
-    // === Фон с частицами (общий) ===
-    (function() {
-      const canvas = document.getElementById('particles-canvas');
-      const ctx = canvas.getContext('2d');
-      let particles = [];
-      const particleCount
+    <!-- Модальное окно -->
+    <div class="modal" id="add-item-modal">
+        <div class="modal-content">
+            <h2>Добавить новый предмет</h2>
+            <div class="form-group">
+                <label for="item-name">Название предмета</label>
+                <input type="text" id="item-name" placeholder="Например: Зелье невидимости">
+            </div>
+            <div class="form-group">
+                <label for="item-image">URL изображения</label>
+                <input type="url" id="item-image" placeholder="https://example.com/icon.png">
+            </div>
+            <div class="form-group">
+                <label for="item-price">Цена за штуку (по умолчанию)</label>
+                <input type="number" id="item-price" value="1000" min="0" step="100">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancel-btn">Отмена</button>
+                <button class="btn btn-primary" id="save-btn">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Загрузка сохранённых предметов
+        let items = JSON.parse(localStorage.getItem('gameItems')) || [];
+
+        const container = document.getElementById('items-container');
+        const totalCostElement = document.getElementById('total-cost');
+        const modal = document.getElementById('add-item-modal');
+        const openModalBtn = document.getElementById('open-modal');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const saveBtn = document.getElementById('save-btn');
+
+        // Сохранение в localStorage
+        function saveItems() {
+            localStorage.setItem('gameItems', JSON.stringify(items));
+        }
+
+        // Генерация уникального ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Рендер одного элемента
+        function renderItem(item) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.id = item.id;
+
+            card.innerHTML = `
+                <button class="delete-btn">×</button>
+                <div class="item-header">
+                    <div class="item-icon" style="background-image: url('${item.image || 'data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"%23aaa\" d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/></svg>'}')"></div>
+                    <div class="item-name">${item.name}</div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Количество:</label>
+                    <input type="number" class="input-field quantity" value="0" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Цена за штуку:</label>
+                    <input type="number" class="input-field price" value="${item.price || 1000}" min="0" step="100">
+                </div>
+                <div class="result">0</div>
+                <div class="contacts">Контакты продавца или заметки...</div>
+            `;
+
+            const deleteBtn = card.querySelector('.delete-btn');
+            const quantityInput = card.querySelector('.quantity');
+            const priceInput = card.querySelector('.price');
+            const resultElement = card.querySelector('.result');
+
+            const updateResult = () => {
+                const q = parseInt(quantityInput.value) || 0;
+                const p = parseInt(priceInput.value) || 0;
+                resultElement.textContent = (q * p).toLocaleString();
+                updateTotalCost();
+            };
+
+            deleteBtn.addEventListener('click', () => {
+                items = items.filter(i => i.id !== item.id);
+                saveItems();
+                card.remove();
+                updateTotalCost();
+            });
+
+            quantityInput.addEventListener('input', updateResult);
+            priceInput.addEventListener('input', updateResult);
+
+            container.appendChild(card);
+        }
+
+        // Рендер всех элементов
+        function renderAllItems() {
+            container.innerHTML = '';
+            items.forEach(renderItem);
+            updateTotalCost();
+        }
+
+        // Обновление общей суммы
+        function updateTotalCost() {
+            let total = 0;
+            document.querySelectorAll('.result').forEach(el => {
+                const num = parseInt(el.textContent.replace(/,/g, '')) || 0;
+                total += num;
+            });
+            totalCostElement.textContent = total.toLocaleString();
+        }
+
+        // Открытие/закрытие модалки
+        openModalBtn.addEventListener('click', () => modal.classList.add('active'));
+        cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+        // Добавление нового предмета
+        saveBtn.addEventListener('click', () => {
+            const name = document.getElementById('item-name').value.trim();
+            const image = document.getElementById('item-image').value.trim();
+            const price = parseInt(document.getElementById('item-price').value) || 1000;
+
+            if (!name) {
+                alert('Пожалуйста, укажите название предмета.');
+                return;
+            }
+
+            const newItem = {
+                id: generateId(),
+                name,
+                image: image || '',
+                price
+            };
+
+            items.push(newItem);
+            saveItems();
+            renderItem(newItem);
+            updateTotalCost();
+
+            // Сброс формы и закрытие
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-image').value = '';
+            document.getElementById('item-price').value = '1000';
+            modal.classList.remove('active');
+        });
+
+        // Закрытие модалки по клику вне контента
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Инициализация
+        renderAllItems();
+    </script>
+</body>
+</html>
