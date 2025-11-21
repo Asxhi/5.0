@@ -44,18 +44,83 @@
             color: transparent;
         }
 
+        .mode-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            color: #00ffff;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            margin-top: 10px;
+        }
+
+        .mode-toggle:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .mode-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mode-toggle:hover::before {
+            left: 100%;
+        }
+
+        /* Стили для сворачиваемого селектора */
         .selector {
             background: var(--card-bg);
             padding: 16px;
             border-radius: 12px;
             margin-bottom: 25px;
             border: 1px solid var(--border-glow);
+            overflow: hidden;
         }
 
-        .selector h2 {
+        .selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 12px;
+        }
+
+        .selector-header h2 {
+            margin: 0;
             color: var(--accent-blue);
             font-size: 1.2rem;
+        }
+
+        .toggle-selector-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-selector-btn.rotated {
+            transform: rotate(180deg);
         }
 
         .items-list {
@@ -63,49 +128,69 @@
             flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
         }
 
-        .item-check {
-            display: flex;
+        .items-list.expanded {
+            max-height: 500px;
+        }
+
+        /* Кнопки выбора предметов */
+        .item-toggle {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             background: rgba(255,255,255,0.05);
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             user-select: none;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            color: var(--text-secondary);
         }
 
-        .item-check:hover {
+        .item-toggle:hover {
             background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
         }
 
-        .item-check input {
-            margin: 0;
+        .item-toggle.selected {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
         }
 
+        .item-toggle.selected:hover {
+            background: rgba(255,235,59,0.2);
+            box-shadow: 0 0 15px rgba(255,235,59,0.7);
+        }
+
+        /* Основной контейнер */
         .container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 30px;
         }
 
         .item-card {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 15px;
+            padding: 14px;
             border: 1px solid var(--border-glow);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
 
         .item-header {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -126,30 +211,32 @@
         }
 
         .input-group {
-            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
         }
 
         .input-label {
             display: block;
-            font-size: 0.85rem;
-            margin-bottom: 5px;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
             color: var(--text-secondary);
         }
 
         .input-field {
             width: 100%;
-            padding: 9px 12px;
+            padding: 8px 10px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 6px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--accent-yellow);
-            box-shadow: 0 0 6px rgba(255,235,59,0.4);
+            box-shadow: 0 0 5px rgba(255,235,59,0.3);
         }
 
         .result {
@@ -157,26 +244,91 @@
             font-weight: bold;
             color: var(--accent-yellow);
             text-align: center;
-            margin: 15px 0;
-            padding: 10px;
+            margin: 12px 0;
+            padding: 8px;
             background: rgba(255,235,59,0.1);
             border-radius: 6px;
+            border-left: 3px solid var(--accent-yellow);
         }
 
         .contacts {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-secondary);
-            background: rgba(255,255,255,0.05);
-            padding: 8px;
-            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
+        /* Компактный режим — 3 столбца */
+        .container.compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .container.compact .item-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            min-height: 60px;
+        }
+
+        .container.compact .item-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .container.compact .item-name {
+            font-size: 0.95rem;
+            min-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .container.compact .input-group {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 100px;
+        }
+
+        .container.compact .input-label {
+            font-size: 0.75rem;
+            margin-bottom: 3px;
+        }
+
+        .container.compact .input-field {
+            width: 85px;
+            padding: 6px 8px;
+            font-size: 0.88rem;
+        }
+
+        .container.compact .result {
+            font-size: 1.1rem;
+            margin: 0;
+            padding: 8px 12px;
+            min-width: 85px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Общая стоимость */
         .total-section {
             background: var(--card-bg);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 25px;
             border-top: 2px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
@@ -224,7 +376,34 @@
             transform: scale(0.95);
         }
 
-        @media (max-width: 600px) {
+        .clear-btn {
+            background: rgba(255, 87, 34, 0.2);
+            border: 1px solid #ff5722;
+            color: #ff5722;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 8px;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 87, 34, 0.3);
+            transform: scale(1.1);
+        }
+
+        .clear-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 700px) {
+            .container.compact {
+                grid-template-columns: 1fr;
+            }
             .container {
                 grid-template-columns: 1fr;
             }
@@ -234,11 +413,15 @@
 <body>
     <div class="header">
         <h1>Игровой калькулятор</h1>
+        <button class="mode-toggle" id="toggle-mode">Компактный режим</button>
     </div>
 
     <div class="selector">
-        <h2>Выберите предметы для расчёта:</h2>
-        <div class="items-list" id="selector-list"></div>
+        <div class="selector-header" id="selector-header">
+            <h2>Выбор предметов</h2>
+            <button class="toggle-selector-btn">▼</button>
+        </div>
+        <div class="items-list" id="items-list"></div>
     </div>
 
     <div class="container" id="items-container"></div>
@@ -248,105 +431,114 @@
         <div class="total-value-container">
             <div class="total-value" id="total-cost">0</div>
             <button class="copy-btn" id="copy-total" title="Копировать сумму">📋</button>
+            <button class="clear-btn" id="clear-quantities" title="Очистить все количества">🧹</button>
         </div>
     </div>
 
     <script>
-        // 🔧 СПИСОК ТВОИХ ПРЕДМЕТОВ — цены можно менять!
         const ITEMS = [
-            { id: 'dust', name: 'Аномальная пыль', price: 500 },
-            { id: 'tool', name: 'Мультитул', price: 3000 },
-            { id: 'yeast', name: 'Дрожжи', price: 800 },
-            { id: 'hoof', name: 'Копыто сильного кабана', price: 1200 },
-            { id: 'bolts', name: 'Набор болтов', price: 700 },
-            { id: 'wormwood', name: 'Янтарная полынь', price: 1500 },
-            { id: 'chertocvet', name: 'Чертоцвет', price: 2000 },
-            { id: 'ammonia', name: 'Аммиак', price: 900 },
-            { id: 'lemon', name: 'Мякоть лимонника', price: 1000 },
-            { id: 'slant', name: 'Мякоть сластены', price: 8000 },
-            { id: 'salt', name: 'Мякоть солевика', price: 500 },
-            { id: 'cube', name: 'Мякоть куборбуза', price: 2500 },
-            { id: 'spices', name: 'Набор специй', price: 1100 },
-            { id: 'plasma', name: 'Аномальная плазма', price: 4000 },
-            { id: 'gnosis', name: 'Гнозис', price: 10000 },
-            { id: 'fish', name: 'Полутухлая рыба', price: 300 },
-            { id: 'millet', name: 'Банка с пшеном', price: 400 },
-            { id: 'solution', name: 'Колба с раствором', price: 1300 },
-            { id: 'acid', name: 'Азотная кислота', price: 1800 },
-            { id: 'meat', name: 'Мясо', price: 250 }
+            { id: 'dust', name: 'Аномальная пыль', price: 500, icon: 'anomalnaya-pyl.png' },
+            { id: 'tool', name: 'Мультитул', price: 3000, icon: 'multitul.png' },
+            { id: 'yeast', name: 'Дрожжи', price: 800, icon: 'drozhzhi.png' },
+            { id: 'hoof', name: 'Копыто сильного кабана', price: 1200, icon: 'kopyto-kabana.png' },
+            { id: 'bolts', name: 'Набор болтов', price: 700, icon: 'nabor-boltov.png' },
+            { id: 'wormwood', name: 'Янтарная полынь', price: 1500, icon: 'yantarnaya-polyin.png' },
+            { id: 'chertocvet', name: 'Чертоцвет', price: 2000, icon: 'chertotsvet.png' },
+            { id: 'ammonia', name: 'Аммиак', price: 900, icon: 'ammiak.png' },
+            { id: 'lemon', name: 'Мякоть лимонника', price: 1000, icon: 'myakot-limonnika.png' },
+            { id: 'slant', name: 'Мякоть сластены', price: 8000, icon: 'myakot-slasteny.png' },
+            { id: 'salt', name: 'Мякоть солевика', price: 500, icon: 'myakot-solevika.png' },
+            { id: 'cube', name: 'Мякоть куборбуза', price: 2500, icon: 'myakot-kuborbuz.png' },
+            { id: 'spices', name: 'Набор специй', price: 1100, icon: 'nabor-spetsiy.png' },
+            { id: 'plasma', name: 'Аномальная плазма', price: 4000, icon: 'anomalnaya-plazma.png' },
+            { id: 'gnosis', name: 'Гнозис', price: 10000, icon: 'gnosis.png' },
+            { id: 'fish', name: 'Полутухлая рыба', price: 300, icon: 'polutukhlaya-ryba.png' },
+            { id: 'millet', name: 'Банка с пшеном', price: 400, icon: 'banka-s-pshenom.png' },
+            { id: 'solution', name: 'Колба с раствором', price: 1300, icon: 'kolba-s-rastvorom.png' },
+            { id: 'acid', name: 'Азотная кислота', price: 1800, icon: 'azotnaya-kislota.png' },
+            { id: 'meat', name: 'Мясо', price: 250, icon: 'myaso.png' }
         ];
 
-        // Функция преобразования названия в имя файла
-        function nameToFilename(name) {
-            return name
-                .toLowerCase()
-                .replace(/ё/g, 'е')
-                .replace(/[^\w\s-]/g, '') // убираем знаки препинания
-                .replace(/\s+/g, '-')       // пробелы → дефисы
-                + '.png';
-        }
-
-        // DOM
-        const selectorList = document.getElementById('selector-list');
+        const selectorList = document.getElementById('items-list');
         const container = document.getElementById('items-container');
         const totalCostElement = document.getElementById('total-cost');
         const copyBtn = document.getElementById('copy-total');
+        const clearBtn = document.getElementById('clear-quantities');
+        const modeToggle = document.getElementById('toggle-mode');
+        const selectorHeader = document.getElementById('selector-header');
+        const toggleBtn = document.querySelector('.toggle-selector-btn');
 
-        let activeItems = new Set();
+        let activeItems = new Set(); // ✅ Ничего не выбрано по умолчанию
+        let isCompactMode = false;
 
-        // Рендер чекбоксов
         function renderSelector() {
             selectorList.innerHTML = '';
             ITEMS.forEach(item => {
-                const label = document.createElement('label');
-                label.className = 'item-check';
-                label.innerHTML = `
-                    <input type="checkbox" value="${item.id}">
-                    ${item.name}
-                `;
-                const checkbox = label.querySelector('input');
-                checkbox.checked = activeItems.has(item.id);
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        activeItems.add(item.id);
-                    } else {
+                const toggle = document.createElement('div');
+                toggle.className = 'item-toggle';
+                toggle.dataset.id = item.id;
+                toggle.textContent = item.name;
+
+                if (activeItems.has(item.id)) {
+                    toggle.classList.add('selected');
+                }
+
+                toggle.addEventListener('click', () => {
+                    if (activeItems.has(item.id)) {
                         activeItems.delete(item.id);
+                        toggle.classList.remove('selected');
+                    } else {
+                        activeItems.add(item.id);
+                        toggle.classList.add('selected');
                     }
                     renderActiveItems();
                 });
-                selectorList.appendChild(label);
+
+                selectorList.appendChild(toggle);
             });
         }
 
-        // Рендер активных карточек
         function renderActiveItems() {
             container.innerHTML = '';
             ITEMS.forEach(item => {
                 if (!activeItems.has(item.id)) return;
 
-                const filename = nameToFilename(item.name);
-                const iconPath = `icons/${filename}`;
-
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.dataset.id = item.id;
 
-                card.innerHTML = `
-                    <div class="item-header">
-                        <div class="item-icon" style="background-image: url('${iconPath}')"></div>
+                if (isCompactMode) {
+                    card.innerHTML = `
+                        <div class="item-icon" style="background-image: url('${item.icon}')"></div>
                         <div class="item-name">${item.name}</div>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Количество:</label>
-                        <input type="number" class="input-field quantity" min="0" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Цена за штуку:</label>
-                        <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
-                    </div>
-                    <div class="result">0</div>
-                    <div class="contacts">Контакты или заметки...</div>
-                `;
+                        <div class="input-group">
+                            <label class="input-label">Кол-во:</label>
+                            <input type="number" class="input-field quantity" min="0" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Цена:</label>
+                            <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
+                        </div>
+                        <div class="result">0</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="item-header">
+                            <div class="item-icon" style="background-image: url('${item.icon}')"></div>
+                            <div class="item-name">${item.name}</div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Количество:</label>
+                            <input type="number" class="input-field quantity" min="0" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Цена за штуку:</label>
+                            <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
+                        </div>
+                        <div class="result">0</div>
+                        <div class="contacts">Контакты или заметки...</div>
+                    `;
+                }
 
                 const qInput = card.querySelector('.quantity');
                 const pInput = card.querySelector('.price');
@@ -357,7 +549,8 @@
                 const update = () => {
                     const q = parseInt(qInput.value) || 0;
                     const p = parseInt(pInput.value) || 0;
-                    result.textContent = (q * p).toLocaleString();
+                    const subtotal = q * p;
+                    result.textContent = subtotal.toLocaleString('ru-RU').replace(/ /g, ' ');
                     updateTotal();
                 };
 
@@ -372,14 +565,22 @@
         function updateTotal() {
             let total = 0;
             document.querySelectorAll('.result').forEach(el => {
-                const val = parseInt(el.textContent.replace(/,/g, '')) || 0;
+                const valStr = el.textContent.replace(/\s/g, '');
+                const val = parseInt(valStr) || 0;
                 total += val;
             });
-            totalCostElement.textContent = total.toLocaleString();
+            totalCostElement.textContent = total;
         }
 
+        clearBtn.addEventListener('click', () => {
+            document.querySelectorAll('.quantity').forEach(input => {
+                input.value = '';
+                input.dispatchEvent(new Event('input'));
+            });
+        });
+
         copyBtn.addEventListener('click', async () => {
-            const text = totalCostElement.textContent.replace(/,/g, '');
+            const text = totalCostElement.textContent;
             try {
                 await navigator.clipboard.writeText(text);
                 const original = copyBtn.innerHTML;
@@ -390,7 +591,23 @@
             }
         });
 
-        // Запуск
+        modeToggle.addEventListener('click', () => {
+            isCompactMode = !isCompactMode;
+            if (isCompactMode) {
+                container.classList.add('compact');
+                modeToggle.textContent = 'Стандартный режим';
+            } else {
+                container.classList.remove('compact');
+                modeToggle.textContent = 'Компактный режим';
+            }
+            renderActiveItems();
+        });
+
+        selectorHeader.addEventListener('click', () => {
+            selectorList.classList.toggle('expanded');
+            toggleBtn.classList.toggle('rotated');
+        });
+
         renderSelector();
         renderActiveItems();
     </script>
