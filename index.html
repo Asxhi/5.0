@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игровой калькулятор</title>
+    <title>STALZONE Calculator</title>
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -16,672 +16,115 @@
             --accent-red: #ff5722;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body { background: var(--bg-dark); color: var(--text-primary); font-family: sans-serif; padding: 20px; }
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        
+        /* Стили карточек */
+        .item-card { background: var(--card-bg); border: 1px solid var(--border-glow); padding: 15px; border-radius: 10px; }
+        .item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .icon { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; }
+        
+        /* Исправление длинного списка */
+        .records-list { 
+            max-height: 120px; 
+            overflow-y: auto; 
+            border-top: 1px solid #333; 
+            margin-top: 10px; 
+            padding-top: 5px;
+            font-size: 0.85rem;
+            color: #aaa;
         }
+        .records-list::-webkit-scrollbar { width: 5px; }
+        .records-list::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; }
 
-        body {
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, var(--accent-yellow), var(--accent-cyan));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: 2px solid rgba(0, 255, 255, 0.5);
-            color: var(--accent-cyan);
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-        }
-
-        .tab-btn:hover {
-            background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-            color: #ffffff;
-            transform: scale(1.03);
-        }
-
-        .tab-btn.active {
-            background: rgba(0, 255, 255, 0.2);
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
-        }
-
-        .item-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: 2px solid rgba(0, 255, 255, 0.5);
-            color: var(--accent-cyan);
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-            font-size: 0.9rem;
-            min-width: auto;
-            max-width: 220px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .item-toggle:hover {
-            background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-            color: #ffffff;
-            transform: scale(1.03);
-        }
-
-        .item-toggle.selected {
-            background: transparent;
-            border-color: #ff2a6d;
-            color: #ff2a6d;
-            box-shadow: 0 0 8px rgba(255, 42, 109, 0.6);
-            font-weight: bold;
-        }
-
-        .items-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .selector {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-glow);
-            overflow: hidden;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .item-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 14px;
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-        }
-
-        .item-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .item-icon {
-            width: 50px;
-            height: 50px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background-color: #1a1a22;
-        }
-
-        .item-name {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.82rem;
-            margin-bottom: 4px;
-            color: var(--text-secondary);
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 8px 10px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-
-        .result {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--accent-yellow);
-            text-align: center;
-            margin: 12px 0;
-            padding: 8px;
-            background: rgba(255,235,59,0.1);
-            border-radius: 6px;
-            border-left: 3px solid var(--accent-yellow);
-        }
-
-        .contacts {
-            font-size: 0.72rem;
-            color: var(--text-secondary);
-            background: rgba(255,255,255,0.03);
-            padding: 6px;
-            border-radius: 5px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .total-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 25px;
-            border-top: 2px solid var(--border-glow);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .total-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .total-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .total-label {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-        }
-
-        .total-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent-yellow);
-        }
-
-        .copy-btn, .clear-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-        }
-
-        .copy-btn {
-            background: rgba(33,150,243,0.2);
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-
-        .clear-btn {
-            background: rgba(255, 87, 34, 0.2);
-            border: 1px solid #ff5722;
-            color: #ff5722;
-        }
-
-        .deal-btn-new {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 42, 109, 0.15);
-            border: 2px solid #ff2a6d;
-            color: #ff2a6d;
-            padding: 8px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 8px rgba(255, 42, 109, 0.5);
-            font-size: 0.95rem;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(0);
-            background: rgba(0, 255, 255, 0.9);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            z-index: 10000;
-            pointer-events: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .profit-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 30px;
-            border-top: 2px solid var(--border-glow);
-            display: none;
-        }
-
-        .profit-section.active {
-            display: block;
-        }
-
-        .overall-profit {
-            text-align: center;
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin-bottom: 25px;
-            padding: 15px;
-            border-radius: 10px;
-            background: rgba(255,235,59,0.05);
-            border: 1px solid rgba(255,235,59,0.2);
-            color: var(--accent-yellow);
-        }
-
-        .profit-items-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-top: 10px;
-        }
-
-        .profit-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-glow);
-            border-radius: 10px;
-            padding: 14px;
-            position: relative;
-            min-height: 110px;
-        }
-
-        .profit-item-name {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 1.05rem;
-        }
-
-        .item-icon-small {
-            width: 28px;
-            height: 28px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .profit-stats {
-            font-size: 0.92rem;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .profit-line {
-            font-size: 0.9rem;
-            margin: 5px 0;
-        }
-
-        .profit-positive { color: var(--accent-yellow); }
-        .profit-negative { color: var(--accent-red); }
-
-        /* ИСПРАВЛЕНИЕ: Стили для прокрутки сделок */
-        .profit-records-list {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .profit-records-list::-webkit-scrollbar { width: 6px; }
-        .profit-records-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .profit-records-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
-
-        .delete-record-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #ff5722;
-            cursor: pointer;
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        @media (max-width: 700px) {
-            .container, .profit-items-grid { grid-template-columns: 1fr; }
-        }
+        .btn { padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; }
+        .btn-deal { background: #ff2a6d; color: white; width: 100%; margin-top: 10px; }
+        
+        .profit-card { border: 1px solid var(--accent-yellow); }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Игровой калькулятор</h1>
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="buy">Покупка</button>
-            <button class="tab-btn" data-tab="sell">Продажа</button>
-            <button class="tab-btn" data-tab="profit">Прибыль</button>
-        </div>
+
+    <div style="text-align: center;">
+        <button class="btn" onclick="switchTab('buy')">Покупка</button>
+        <button class="btn" onclick="switchTab('sell')">Продажа</button>
+        <button class="btn" onclick="switchTab('profit')">Прибыль</button>
     </div>
 
-    <div style="text-align: center; margin-bottom: 25px;">
-        <button class="tab-btn" id="toggle-selector-btn">Выбор предметов</button>
-    </div>
-
-    <div class="selector" id="selector-container" style="display: none;">
-        <div class="items-list" id="items-list"></div>
-    </div>
-
-    <div class="container" id="buy-container"></div>
-    <div class="container" id="sell-container" style="display:none;"></div>
-
-    <div class="profit-section" id="profit-section">
-        <div class="overall-profit" id="overall-profit">Общая прибыль: 0 ₽</div>
-        <div id="profit-details"></div>
-    </div>
-
-    <div class="total-section">
-        <div class="total-wrapper">
-            <button class="deal-btn-new" id="deal-btn">Сделка состоялась</button>
-            <div class="total-info">
-                <span class="total-label">Текущая стоимость:</span>
-                <div class="total-value-container">
-                    <div class="total-value" id="total-cost">0</div>
-                    <button class="copy-btn" id="copy-total" title="Копировать сумму">📋</button>
-                    <button class="clear-btn" id="clear-quantities" title="Очистить все количества">🧹</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="main-container" class="container"></div>
 
     <script>
+        // НАСТРОЙКИ
+        const ICONS_PATH = 'icons/'; // Папка на гитхабе
         const ITEMS = [
             { id: 'dust', name: 'Аномальная пыль', price: 270, icon: 'anomalnaya-pyl.png' },
             { id: 'tool', name: 'Мультитул', price: 5000, icon: 'multitul.png' },
-            { id: 'yeast', name: 'Дрожжи', price: 1500, icon: 'drozhzhi.png' },
-            { id: 'hoof', name: 'Копыто сильного кабана', price: 3000, icon: 'kopyto-kabana.png' },
-            { id: 'bolts', name: 'Набор болтов', price: 8000, icon: 'nabor-boltov.png' },
-            { id: 'wormwood', name: 'Янтарная полынь', price: 10000, icon: 'yantarnaya-polyin.png' },
-            { id: 'chertocvet', name: 'Чертоцвет', price: 1000, icon: 'chertotsvet.png' },
-            { id: 'ammonia', name: 'Аммиак', price: 10000, icon: 'ammiak.png' },
-            { id: 'lemon', name: 'Мякоть лимонника', price: 1000, icon: 'myakot-limonnika.png' },
-            { id: 'slant', name: 'Мякоть сластены', price: 7000, icon: 'myakot-slasteny.png' },
-            { id: 'salt', name: 'Мякоть солевика', price: 1000, icon: 'myakot-solevika.png' },
-            { id: 'cube', name: 'Мякоть куборбуза', price: 3000, icon: 'myakot-kuborbuz.png' },
-            { id: 'spices', name: 'Набор специй', price: 1500, icon: 'nabor-spetsiy.png' },
-            { id: 'plasma', name: 'Аномальная плазма', price: 1500, icon: 'anomalnaya-plazma.png' },
-            { id: 'gnosis', name: 'Гнозис', price: 100, icon: 'gnosis.png' },
-            { id: 'fish', name: 'Полутухлая рыба', price: 2000, icon: 'polutukhlaya-ryba.png' },
-            { id: 'millet', name: 'Банка с пшеном', price: 3000, icon: 'banka-s-pshenom.png' },
-            { id: 'solution', name: 'Колба с раствором', price: 2000, icon: 'kolba-s-rastvorom.png' },
-            { id: 'acid', name: 'Азотная кислота', price: 3000, icon: 'azotnaya-kislota.png' },
-            { id: 'meat', name: 'Мясо', price: 1500, icon: 'myaso.png' },
-            { id: 'udar', name: 'Удар', price: 2000, icon: 'udar.png' }
+            // Добавляй свои предметы сюда
         ];
 
-        let activeItems = new Set();
-        let currentTab = 'buy';
-        let buyHistory = [];
-        let sellHistory = [];
+        let state = {
+            buyHistory: JSON.parse(localStorage.getItem('buyHistory') || '[]'),
+            sellHistory: JSON.parse(localStorage.getItem('sellHistory') || '[]')
+        };
 
-        const buyContainer = document.getElementById('buy-container');
-        const sellContainer = document.getElementById('sell-container');
-        const totalCostElement = document.getElementById('total-cost');
-        const copyBtn = document.getElementById('copy-total');
-        const clearBtn = document.getElementById('clear-quantities');
-        const dealBtn = document.getElementById('deal-btn');
-        const toggleSelectorBtn = document.getElementById('toggle-selector-btn');
-        const selectorContainer = document.getElementById('selector-container');
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const profitSection = document.getElementById('profit-section');
-        const overallProfit = document.getElementById('overall-profit');
-        const profitDetails = document.getElementById('profit-details');
-        const selectorList = document.getElementById('items-list');
+        function render(mode) {
+            const container = document.getElementById('main-container');
+            container.innerHTML = '';
 
-        function saveToStorage() {
-            localStorage.setItem('activeItems', JSON.stringify([...activeItems]));
-            localStorage.setItem('buyHistory', JSON.stringify(buyHistory));
-            localStorage.setItem('sellHistory', JSON.stringify(sellHistory));
+            if (mode === 'profit') {
+                renderProfit(container);
+            } else {
+                ITEMS.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div class="item-header">
+                            <div class="icon" style="background-image: url('${ICONS_PATH}${item.icon}')"></div>
+                            <b>${item.name}</b>
+                        </div>
+                        <input type="number" id="qty-${item.id}" placeholder="Кол-во" style="width:100%">
+                        <input type="number" id="price-${item.id}" value="${item.price}" style="width:100%; margin-top:5px">
+                        <button class="btn btn-deal" onclick="addRecord('${item.id}', '${mode}')">Записать ${mode === 'buy' ? 'Покупку' : 'Продажу'}</button>
+                    `;
+                    container.appendChild(card);
+                });
+            }
         }
 
-        function loadFromStorage() {
-            const savedActive = localStorage.getItem('activeItems');
-            if (savedActive) activeItems = new Set(JSON.parse(savedActive));
-            buyHistory = JSON.parse(localStorage.getItem('buyHistory') || '[]');
-            sellHistory = JSON.parse(localStorage.getItem('sellHistory') || '[]');
-        }
-
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentTab = btn.dataset.tab;
-                buyContainer.style.display = 'none';
-                sellContainer.style.display = 'none';
-                profitSection.classList.remove('active');
-                if (currentTab === 'buy') { buyContainer.style.display = 'grid'; updateTotal('buy'); }
-                else if (currentTab === 'sell') { sellContainer.style.display = 'grid'; updateTotal('sell'); }
-                else if (currentTab === 'profit') { profitSection.classList.add('active'); renderProfitReport(); }
-            });
-        });
-
-        function renderSelector() {
-            selectorList.innerHTML = '';
-            ITEMS.forEach(item => {
-                const toggle = document.createElement('div');
-                toggle.className = 'item-toggle' + (activeItems.has(item.id) ? ' selected' : '');
-                toggle.textContent = item.name;
-                toggle.onclick = () => {
-                    if (activeItems.has(item.id)) { activeItems.delete(item.id); toggle.classList.remove('selected'); }
-                    else { activeItems.add(item.id); toggle.classList.add('selected'); }
-                    renderActiveItems();
-                };
-                selectorList.appendChild(toggle);
-            });
-        }
-
-        function renderActiveItems() {
-            buyContainer.innerHTML = '';
-            sellContainer.innerHTML = '';
-            ITEMS.forEach(item => {
-                if (!activeItems.has(item.id)) return;
-                buyContainer.appendChild(createItemCard(item, 'buy'));
-                sellContainer.appendChild(createItemCard(item, 'sell'));
-            });
-            updateTotal(currentTab === 'profit' ? 'buy' : currentTab);
-            saveToStorage();
-        }
-
-        function createItemCard(item, mode) {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.dataset.id = item.id;
-            card.innerHTML = `
-                <div class="item-header">
-                    <div class="item-icon" style="background-image: url('${item.icon}')"></div>
-                    <div class="item-name">${item.name}</div>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">${mode === 'buy' ? 'Куплено' : 'Продано'}:</label>
-                    <input type="number" class="input-field quantity" min="0" step="1">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Цена:</label>
-                    <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
-                </div>
-                <div class="result">0</div>
-                <div class="contacts">Контакты или заметки...</div>
-            `;
-            const qInput = card.querySelector('.quantity');
-            const pInput = card.querySelector('.price');
-            const result = card.querySelector('.result');
-            const update = () => {
-                result.textContent = ( (parseInt(qInput.value)||0) * (parseInt(pInput.value)||0) ).toLocaleString();
-                if ((mode === 'buy' && currentTab === 'buy') || (mode === 'sell' && currentTab === 'sell')) updateTotal(mode);
-            };
-            qInput.addEventListener('input', update);
-            pInput.addEventListener('input', update);
-            return card;
-        }
-
-        function updateTotal(mode) {
-            let total = 0;
-            (mode === 'buy' ? buyContainer : sellContainer).querySelectorAll('.result').forEach(el => {
-                total += parseInt(el.textContent.replace(/,/g, '')) || 0;
-            });
-            totalCostElement.textContent = total;
-        }
-
-        function renderProfitReport() {
-            const itemStats = {};
-            ITEMS.forEach(i => itemStats[i.id] = { ...i, boughtQty: 0, boughtTotal: 0, soldQty: 0, soldTotal: 0, buyRecords: [], sellRecords: [] });
-            buyHistory.forEach(r => { if(itemStats[r.id]) { itemStats[r.id].boughtQty += r.quantity; itemStats[r.id].boughtTotal += r.total; itemStats[r.id].buyRecords.push(r); }});
-            sellHistory.forEach(r => { if(itemStats[r.id]) { itemStats[r.id].soldQty += r.quantity; itemStats[r.id].soldTotal += r.total; itemStats[r.id].sellRecords.push(r); }});
-
-            const totalProfit = Object.values(itemStats).reduce((sum, i) => sum + (i.soldTotal - i.boughtTotal), 0);
-            overallProfit.textContent = `Общая прибыль: ${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString()} ₽`;
+        function addRecord(itemId, mode) {
+            const qty = document.getElementById(`qty-${itemId}`).value;
+            const price = document.getElementById(`price-${itemId}`).value;
+            if(!qty || !price) return;
             
-            profitDetails.innerHTML = '';
-            const grid = document.createElement('div');
-            grid.className = 'profit-items-grid';
+            const record = { id: itemId, qty: parseInt(qty), price: parseInt(price), date: Date.now() };
+            if (mode === 'buy') state.buyHistory.push(record);
+            else state.sellHistory.push(record);
+            
+            localStorage.setItem('buyHistory', JSON.stringify(state.buyHistory));
+            localStorage.setItem('sellHistory', JSON.stringify(state.sellHistory));
+            alert('Записано!');
+        }
 
-            Object.values(itemStats).filter(i => i.boughtQty > 0 || i.soldQty > 0).sort((a,b) => (b.soldTotal - b.boughtTotal) - (a.soldTotal - a.boughtTotal)).forEach(item => {
-                const profit = item.soldTotal - item.boughtTotal;
-                let recordsHtml = [...item.buyRecords.map(r => ({...r, type:'buy'})), ...item.sellRecords.map(r => ({...r, type:'sell'}))].map(rec => 
-                    `<div class="profit-line">${rec.type === 'buy' ? 'Покупка' : 'Продажа'}: ${rec.quantity} × ${rec.price} ₽ = ${rec.total} ₽</div>`
-                ).join('');
-
+        function renderProfit(container) {
+            ITEMS.forEach(item => {
+                const buys = state.buyHistory.filter(r => r.id === item.id);
+                const sells = state.sellHistory.filter(r => r.id === item.id);
+                
                 const card = document.createElement('div');
-                card.className = 'profit-item';
+                card.className = 'item-card profit-card';
                 card.innerHTML = `
-                    <div class="profit-item-name">
-                        <div class="item-icon-small" style="background-image: url('${item.icon}')"></div>
-                        <span>${item.name}</span>
+                    <b>${item.name}</b>
+                    <div class="records-list">
+                        ${buys.map(r => `<div>Покупка: ${r.qty}x${r.price}</div>`).join('')}
+                        ${sells.map(r => `<div>Продажа: ${r.qty}x${r.price}</div>`).join('')}
                     </div>
-                    <div class="profit-stats">
-                        Куплено: ${item.boughtQty} | Продано: ${item.soldQty}<br>
-                        Затраты: ${item.boughtTotal.toLocaleString()} ₽ | Выручка: ${item.soldTotal.toLocaleString()} ₽
-                    </div>
-                    <div class="profit-line ${profit >= 0 ? 'profit-positive' : 'profit-negative'}"><b>Прибыль: ${profit >= 0 ? '+' : ''}${profit.toLocaleString()} ₽</b></div>
-                    <div class="profit-records-list">${recordsHtml}</div>
-                    <button class="delete-record-btn" data-id="${item.id}">🗑️</button>
                 `;
-                grid.appendChild(card);
-            });
-            profitDetails.appendChild(grid);
-
-            document.querySelectorAll('.delete-record-btn').forEach(btn => btn.onclick = () => {
-                buyHistory = buyHistory.filter(r => r.id !== btn.dataset.id);
-                sellHistory = sellHistory.filter(r => r.id !== btn.dataset.id);
-                saveToStorage();
-                renderProfitReport();
+                container.appendChild(card);
             });
         }
 
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        dealBtn.addEventListener('click', () => {
-            const container = currentTab === 'buy' ? buyContainer : sellContainer;
-            container.querySelectorAll('.item-card').forEach(card => {
-                const q = parseInt(card.querySelector('.quantity').value) || 0;
-                const p = parseInt(card.querySelector('.price').value) || 0;
-                if (q > 0 && p > 0) {
-                    const record = { id: card.dataset.id, quantity: q, price: p, total: q * p, timestamp: new Date() };
-                    currentTab === 'buy' ? buyHistory.push(record) : sellHistory.push(record);
-                }
-            });
-            saveToStorage();
-            showToast('✅ Сделка зафиксирована!');
-        });
-
-        clearBtn.addEventListener('click', () => {
-            (currentTab === 'buy' ? buyContainer : sellContainer).querySelectorAll('.quantity').forEach(i => { i.value = ''; i.dispatchEvent(new Event('input')); });
-        });
-
-        copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(totalCostElement.textContent);
-            showToast('Сумма скопирована!');
-        });
-
-        toggleSelectorBtn.addEventListener('click', () => {
-            const hidden = selectorContainer.style.display === 'none';
-            selectorContainer.style.display = hidden ? 'block' : 'none';
-            toggleSelectorBtn.innerHTML = hidden ? 'Выбор предметов ▲' : 'Выбор предметов';
-            if (hidden) renderSelector();
-        });
-
-        loadFromStorage();
-        renderSelector();
-        renderActiveItems();
+        function switchTab(mode) { render(mode); }
+        render('buy'); // Старт
     </script>
 </body>
 </html>
