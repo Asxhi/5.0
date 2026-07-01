@@ -8,10 +8,10 @@
             --bg: #0d100d;
             --panel: #151a15;
             --border: #3e483e;
-            --text: #a8b8a8;
             --green: #40a040;
             --amber: #d4a017;
             --red: #cc3333;
+            --text: #a8b8a8;
         }
 
         body {
@@ -26,24 +26,32 @@
 
         h1 { color: var(--green); text-align: center; text-transform: uppercase; border-bottom: 2px solid var(--green); padding-bottom: 10px; }
 
+        /* Вкладки */
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
         .tab-btn { background: #000; border: 1px solid var(--green); color: var(--green); padding: 8px 15px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .tab-btn.active { background: var(--green); color: #000; }
 
-        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        /* Сектор выбора */
+        .selector { background: var(--panel); padding: 15px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; }
+        .items-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .item-toggle { border: 1px solid var(--green); padding: 5px 10px; cursor: pointer; color: var(--green); font-size: 0.8rem; }
+        .item-toggle.selected { background: var(--green); color: #000; font-weight: bold; }
 
-        .item-card { background: var(--panel); border: 2px solid var(--border); padding: 15px; }
+        /* Карточки */
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .item-card { background: var(--panel); border: 1px solid var(--border); padding: 15px; }
         .item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .item-icon { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border: 1px solid var(--border); }
-        
         input { background: #000; border: 1px solid var(--border); color: var(--amber); padding: 5px; width: 100%; margin-top: 5px; }
-        
-        .deal-btn { background: var(--amber); color: #000; border: none; padding: 10px; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        
-        .profit-records-list { 
-            max-height: 120px; overflow-y: auto; border: 1px solid var(--border); 
-            background: #0a0a0a; padding: 5px; margin-top: 10px; font-size: 0.8rem;
-        }
+        .result { color: var(--amber); font-weight: bold; margin-top: 10px; text-align: right; }
+
+        /* Подвал */
+        .total-section { background: var(--panel); border: 1px solid var(--border); padding: 20px; margin-top: 20px; text-align: center; }
+        .deal-btn-new { background: var(--amber); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .copy-btn, .clear-btn { background: #000; border: 1px solid var(--green); color: var(--green); padding: 5px 10px; cursor: pointer; margin-left: 5px; }
+
+        /* История */
+        .profit-records-list { max-height: 120px; overflow-y: auto; border: 1px solid var(--border); background: #0a0a0a; padding: 5px; margin-top: 10px; font-size: 0.8rem; }
         .profit-records-list::-webkit-scrollbar { width: 5px; }
         .profit-records-list::-webkit-scrollbar-thumb { background: var(--green); }
     </style>
@@ -51,20 +59,29 @@
 <body>
 
     <h1>[PDA SYSTEM]</h1>
+
     <div class="tabs">
         <button class="tab-btn active" data-tab="buy">Покупка</button>
         <button class="tab-btn" data-tab="sell">Продажа</button>
         <button class="tab-btn" data-tab="profit">Прибыль</button>
     </div>
 
-    <div id="buy-container" class="container"></div>
-    <div id="sell-container" class="container" style="display:none;"></div>
+    <div class="selector">
+        <div class="items-list" id="items-list"></div>
+    </div>
+
+    <div class="container" id="buy-container"></div>
+    <div class="container" id="sell-container" style="display:none;"></div>
     
     <div id="profit-section" class="container" style="display:none;"></div>
 
-    <div style="background: var(--panel); border: 2px solid var(--border); padding: 20px; margin-top: 20px; text-align: center;">
-        <button id="deal-btn" class="deal-btn">Зафиксировать сделку</button>
-        <div style="margin-top: 10px;">Итого: <span id="total-cost" style="color: var(--amber);">0</span></div>
+    <div class="total-section">
+        <button class="deal-btn-new" id="deal-btn">Зафиксировать сделку</button>
+        <div style="margin-top:10px;">
+            Итого: <span id="total-cost" style="color: var(--amber);">0</span>
+            <button class="copy-btn" id="copy-total">📋</button>
+            <button class="clear-btn" id="clear-quantities">🧹</button>
+        </div>
     </div>
 
     <script>
@@ -72,84 +89,456 @@
             { id: 'dust', name: 'Аномальная пыль', price: 270, icon: 'anomalnaya-pyl.png' },
             { id: 'tool', name: 'Мультитул', price: 5000, icon: 'multitul.png' },
             { id: 'yeast', name: 'Дрожжи', price: 1500, icon: 'drozhzhi.png' },
-            { id: 'fish', name: 'Полутухлая рыба', price: 2000, icon: 'polutukhlaya-ryba.png' }
-            // Добавь свои предметы сюда
+            { id: 'hoof', name: 'Копыто сильного кабана', price: 3000, icon: 'kopyto-kabana.png' },
+            { id: 'bolts', name: 'Набор болтов', price: 8000, icon: 'nabor-boltov.png' },
+            { id: 'wormwood', name: 'Янтарная полынь', price: 10000, icon: 'yantarnaya-polyin.png' },
+            { id: 'chertocvet', name: 'Чертоцвет', price: 1000, icon: 'chertotsvet.png' },
+            { id: 'ammonia', name: 'Аммиак', price: 10000, icon: 'ammiak.png' },
+            { id: 'lemon', name: 'Мякоть лимонника', price: 1000, icon: 'myakot-limonnika.png' },
+            { id: 'slant', name: 'Мякоть сластены', price: 7000, icon: 'myakot-slasteny.png' },
+            { id: 'salt', name: 'Мякоть солевика', price: 1000, icon: 'myakot-solevika.png' },
+            { id: 'cube', name: 'Мякоть куборбуза', price: 3000, icon: 'myakot-kuborbuz.png' },
+            { id: 'spices', name: 'Набор специй', price: 1500, icon: 'nabor-spetsiy.png' },
+            { id: 'plasma', name: 'Аномальная плазма', price: 1500, icon: 'anomalnaya-plazma.png' },
+            { id: 'gnosis', name: 'Гнозис', price: 100, icon: 'gnosis.png' },
+            { id: 'fish', name: 'Полутухлая рыба', price: 2000, icon: 'polutukhlaya-ryba.png' },
+            { id: 'millet', name: 'Банка с пшеном', price: 3000, icon: 'banka-s-pshenom.png' },
+            { id: 'solution', name: 'Колба с раствором', price: 2000, icon: 'kolba-s-rastvorom.png' },
+            { id: 'acid', name: 'Азотная кислота', price: 3000, icon: 'azotnaya-kislota.png' },
+            { id: 'meat', name: 'Мясо', price: 1500, icon: 'myaso.png' },
+            { id: 'udar', name: 'Удар', price: 2000, icon: 'udar.png' }
         ];
 
-        let buyHistory = JSON.parse(localStorage.getItem('buyHistory') || '[]');
-        let sellHistory = JSON.parse(localStorage.getItem('sellHistory') || '[]');
+        // Состояния
+        let activeItems = new Set();
+        let currentTab = 'buy';
 
-        function render() {
-            const buyContainer = document.getElementById('buy-container');
-            const sellContainer = document.getElementById('sell-container');
-            const profitSection = document.getElementById('profit-section');
-            
-            buyContainer.innerHTML = ''; sellContainer.innerHTML = ''; profitSection.innerHTML = '';
+        // Отчёты
+        let buyHistory = [];
+        let sellHistory = [];
 
-            ITEMS.forEach(item => {
-                // Карточки покупки/продажи
-                [buyContainer, sellContainer].forEach((cont, idx) => {
-                    const mode = idx === 0 ? 'buy' : 'sell';
-                    const card = document.createElement('div');
-                    card.className = 'item-card';
-                    card.innerHTML = `
-                        <div class="item-header"><div class="item-icon" style="background-image:url('icons/${item.icon}')"></div><b>${item.name}</b></div>
-                        <input type="number" class="qty" placeholder="Кол-во" data-id="${item.id}">
-                        <input type="number" class="price" value="${item.price}" data-id="${item.id}">
-                    `;
-                    cont.appendChild(card);
-                });
-            });
+        // DOM элементы
+        const selectorList = document.getElementById('items-list');
+        const buyContainer = document.getElementById('buy-container');
+        const sellContainer = document.getElementById('sell-container');
+        const totalCostElement = document.getElementById('total-cost');
+        const copyBtn = document.getElementById('copy-total');
+        const clearBtn = document.getElementById('clear-quantities');
+        const dealBtn = document.getElementById('deal-btn');
+        const toggleSelectorBtn = document.getElementById('toggle-selector-btn');
+        const selectorContainer = document.getElementById('selector-container');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const profitSection = document.getElementById('profit-section');
+        const overallProfit = document.getElementById('overall-profit');
+        const profitDetails = document.getElementById('profit-details');
 
-            // Рендер прибыли
-            renderProfit(profitSection);
+        // === РАБОТА С LOCALSTORAGE ===
+        function saveToStorage() {
+            try {
+                localStorage.setItem('activeItems', JSON.stringify([...activeItems]));
+                localStorage.setItem('buyHistory', JSON.stringify(buyHistory));
+                localStorage.setItem('sellHistory', JSON.stringify(sellHistory));
+            } catch (e) {
+                console.warn('Не удалось сохранить данные:', e);
+            }
         }
 
-        function renderProfit(cont) {
-            ITEMS.forEach(item => {
-                const b = buyHistory.filter(x => x.id === item.id);
-                const s = sellHistory.filter(x => x.id === item.id);
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.innerHTML = `
-                    <b>${item.name}</b>
-                    <div class="profit-records-list">
-                        ${b.map(x => `<div>ПОКУПКА: ${x.q}x${x.p}</div>`).join('')}
-                        ${s.map(x => `<div>ПРОДАЖА: ${x.q}x${x.p}</div>`).join('')}
-                    </div>
-                `;
-                cont.appendChild(card);
-            });
+        function loadFromStorage() {
+            try {
+                const savedActive = localStorage.getItem('activeItems');
+                const savedBuy = localStorage.getItem('buyHistory');
+                const savedSell = localStorage.getItem('sellHistory');
+
+                if (savedActive) {
+                    activeItems = new Set(JSON.parse(savedActive));
+                }
+                if (savedBuy) {
+                    buyHistory = JSON.parse(savedBuy);
+                }
+                if (savedSell) {
+                    sellHistory = JSON.parse(savedSell);
+                }
+            } catch (e) {
+                console.warn('Не удалось загрузить данные:', e);
+                localStorage.removeItem('activeItems');
+                localStorage.removeItem('buyHistory');
+                localStorage.removeItem('sellHistory');
+            }
         }
 
-        document.getElementById('deal-btn').onclick = () => {
-            const activeCont = document.querySelector('.container[style*="display: block"]') || document.querySelector('.container:not([style*="display: none"])');
-            activeCont.querySelectorAll('.item-card').forEach(card => {
-                const q = card.querySelector('.qty').value;
-                const p = card.querySelector('.price').value;
-                if(q && p) {
-                    const id = card.querySelector('.qty').dataset.id;
-                    const hist = activeCont.id === 'buy-container' ? buyHistory : sellHistory;
-                    hist.push({id, q: parseInt(q), p: parseInt(p)});
+        // Переключение вкладок
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTab = btn.dataset.tab;
+
+                buyContainer.style.display = 'none';
+                sellContainer.style.display = 'none';
+                profitSection.classList.remove('active');
+
+                if (currentTab === 'buy') {
+                    buyContainer.style.display = 'grid';
+                    updateTotal('buy');
+                } else if (currentTab === 'sell') {
+                    sellContainer.style.display = 'grid';
+                    updateTotal('sell');
+                } else if (currentTab === 'profit') {
+                    profitSection.classList.add('active');
+                    renderProfitReport();
                 }
             });
-            localStorage.setItem('buyHistory', JSON.stringify(buyHistory));
-            localStorage.setItem('sellHistory', JSON.stringify(sellHistory));
-            alert('Сделка зафиксирована в базе PDA!');
-            render();
-        };
-
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('buy-container').style.display = btn.dataset.tab === 'buy' ? 'grid' : 'none';
-                document.getElementById('sell-container').style.display = btn.dataset.tab === 'sell' ? 'grid' : 'none';
-                document.getElementById('profit-section').style.display = btn.dataset.tab === 'profit' ? 'grid' : 'none';
-            };
         });
 
-        render();
+        // Рендер выбора предметов
+        function renderSelector() {
+            selectorList.innerHTML = '';
+            ITEMS.forEach(item => {
+                const toggle = document.createElement('div');
+                toggle.className = 'item-toggle';
+                toggle.dataset.id = item.id;
+                toggle.textContent = item.name;
+
+                if (activeItems.has(item.id)) {
+                    toggle.classList.add('selected');
+                }
+
+                toggle.addEventListener('click', () => {
+                    if (activeItems.has(item.id)) {
+                        activeItems.delete(item.id);
+                        toggle.classList.remove('selected');
+                    } else {
+                        activeItems.add(item.id);
+                        toggle.classList.add('selected');
+                    }
+                    renderActiveItems();
+                });
+
+                selectorList.appendChild(toggle);
+            });
+        }
+
+        // Рендер активных предметов
+        function renderActiveItems() {
+            buyContainer.innerHTML = '';
+            sellContainer.innerHTML = '';
+            ITEMS.forEach(item => {
+                if (!activeItems.has(item.id)) return;
+
+                const buyCard = createItemCard(item, 'buy');
+                buyContainer.appendChild(buyCard);
+
+                const sellCard = createItemCard(item, 'sell');
+                sellContainer.appendChild(sellCard);
+            });
+            updateTotal(currentTab === 'profit' ? 'buy' : currentTab);
+            saveToStorage(); // Сохраняем при изменении активных предметов
+        }
+
+        function createItemCard(item, mode) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.id = item.id;
+
+            card.innerHTML = `
+                <div class="item-header">
+                    <div class="item-icon" style="background-image: url('${item.icon}')"></div>
+                    <div class="item-name">${item.name}</div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">${mode === 'buy' ? 'Куплено' : 'Продано'}:</label>
+                    <input type="number" class="input-field quantity" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Цена:</label>
+                    <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
+                </div>
+                <div class="result">0</div>
+                <div class="contacts">Контакты или заметки...</div>
+            `;
+
+            const qInput = card.querySelector('.quantity');
+            const pInput = card.querySelector('.price');
+            const result = card.querySelector('.result');
+
+            qInput.addEventListener('focus', () => qInput.select());
+
+            const update = () => {
+                const q = parseInt(qInput.value) || 0;
+                const p = parseInt(pInput.value) || 0;
+                const subtotal = q * p;
+                result.textContent = subtotal.toLocaleString('ru-RU').replace(/ /g, ' ');
+                if (mode === 'buy' && currentTab === 'buy') {
+                    updateTotal('buy');
+                } else if (mode === 'sell' && currentTab === 'sell') {
+                    updateTotal('sell');
+                }
+            };
+
+            qInput.addEventListener('input', update);
+            pInput.addEventListener('input', update);
+
+            return card;
+        }
+
+        function updateTotal(mode) {
+            let total = 0;
+            const container = mode === 'buy' ? buyContainer : sellContainer;
+            container.querySelectorAll('.result').forEach(el => {
+                const valStr = el.textContent.replace(/\s/g, '');
+                const val = parseInt(valStr) || 0;
+                total += val;
+            });
+            totalCostElement.textContent = total;
+        }
+
+        // === ОБНОВЛЁННАЯ ФУНКЦИЯ ОТЧЁТА С УДАЛЕНИЕМ ===
+        function renderProfitReport() {
+            const itemStats = {};
+
+            ITEMS.forEach(item => {
+                itemStats[item.id] = {
+                    id: item.id,
+                    name: item.name,
+                    icon: item.icon,
+                    boughtQty: 0,
+                    boughtTotal: 0,
+                    soldQty: 0,
+                    soldTotal: 0,
+                    buyRecords: [],
+                    sellRecords: []
+                };
+            });
+
+            buyHistory.forEach((record, index) => {
+                if (itemStats[record.id]) {
+                    itemStats[record.id].boughtQty += record.quantity;
+                    itemStats[record.id].boughtTotal += record.total;
+                    itemStats[record.id].buyRecords.push({ ...record, type: 'buy', globalIndex: index });
+                }
+            });
+
+            sellHistory.forEach((record, index) => {
+                if (itemStats[record.id]) {
+                    itemStats[record.id].soldQty += record.quantity;
+                    itemStats[record.id].soldTotal += record.total;
+                    itemStats[record.id].sellRecords.push({ ...record, type: 'sell', globalIndex: index });
+                }
+            });
+
+            const totalBought = Object.values(itemStats).reduce((sum, item) => sum + item.boughtTotal, 0);
+            const totalSold = Object.values(itemStats).reduce((sum, item) => sum + item.soldTotal, 0);
+            const totalProfit = totalSold - totalBought;
+
+            overallProfit.textContent = `Общая прибыль: ${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString('ru-RU')} ₽`;
+            if (totalProfit >= 0) {
+                overallProfit.className = 'overall-profit profit-positive';
+            } else {
+                overallProfit.className = 'overall-profit profit-negative';
+            }
+
+            const relevantItems = Object.values(itemStats).filter(item =>
+                item.boughtQty > 0 || item.soldQty > 0
+            );
+
+            relevantItems.sort((a, b) => {
+                const profitA = a.soldTotal - a.boughtTotal;
+                const profitB = b.soldTotal - b.boughtTotal;
+                return profitB - profitA;
+            });
+
+            if (relevantItems.length === 0) {
+                profitDetails.innerHTML = '<div class="no-data">Нет данных. Совершите сделку в разделе "Покупка" или "Продажа"</div>';
+                return;
+            }
+
+            // Очищаем контейнер и создаем сетку
+            profitDetails.innerHTML = '';
+            const grid = document.createElement('div');
+            grid.className = 'profit-items-grid';
+
+            relevantItems.forEach(item => {
+                const profit = item.soldTotal - item.boughtTotal;
+                const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+
+                // Генерируем список сделок
+                const allRecords = [...item.buyRecords, ...item.sellRecords].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                let recordsHtml = '';
+                allRecords.forEach(rec => {
+                    const typeLabel = rec.type === 'buy' ? 'Покупка' : 'Продажа';
+                    recordsHtml += `
+                        <div class="profit-line">${typeLabel}: ${rec.quantity} × ${rec.price} ₽ = ${rec.total} ₽</div>
+                    `;
+                });
+
+                // Создаем карточку
+                const card = document.createElement('div');
+                card.className = 'profit-item';
+
+                card.innerHTML = `
+                    <div class="profit-item-name">
+                        <div class="item-icon-small" style="background-image: url('${item.icon}')"></div>
+                        <span>${item.name}</span>
+                    </div>
+                    <div class="profit-stats">
+                        Куплено: ${item.boughtQty} шт. | Продано: ${item.soldQty} шт.<br>
+                        Потрачено: ${item.boughtTotal.toLocaleString('ru-RU')} ₽ | Получено: ${item.soldTotal.toLocaleString('ru-RU')} ₽
+                    </div>
+                    <div class="profit-line profit-amount ${profitClass}">
+                        Прибыль: ${profit >= 0 ? '+' : ''}${profit.toLocaleString('ru-RU')} ₽
+                    </div>
+                    <div class="profit-records-list" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        ${recordsHtml}
+                    </div>
+                    <button class="delete-record-btn" data-item-id="${item.id}" title="Удалить все сделки по этому предмету">🗑️</button>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            profitDetails.appendChild(grid);
+
+            // Обработчик удаления ВСЕХ сделок по предмету
+            document.querySelectorAll('.delete-record-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.dataset.itemId;
+
+                    // Фильтруем истории
+                    buyHistory = buyHistory.filter(record => record.id !== itemId);
+                    sellHistory = sellHistory.filter(record => record.id !== itemId);
+
+                    saveToStorage();
+                    renderProfitReport();
+                    showToast(`Все сделки по "${ITEMS.find(i => i.id === itemId)?.name}" удалены.`, true);
+                });
+            });
+        }
+
+        // === Функция тоста ===
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.background = isError ? 'rgba(255, 87, 34, 0.9)' : 'rgba(255, 42, 109, 0.9)';
+            toast.style.color = 'white';
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+            }, 1800);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // === Ховер-эффект с пузырьками ===
+        dealBtn.addEventListener('mouseenter', function(e) {
+            const rect = this.getBoundingClientRect();
+            for (let i = 0; i < 6; i++) {
+                const bubble = document.createElement('span');
+                bubble.classList.add('bubble');
+                bubble.style.left = (e.clientX - rect.left) + 'px';
+                bubble.style.top = (e.clientY - rect.top) + 'px';
+                this.appendChild(bubble);
+                setTimeout(() => {
+                    if (bubble.parentNode === this) {
+                        bubble.remove();
+                    }
+                }, 600);
+            }
+        });
+
+        // === Обработчик клика — фиксирует сделку ===
+        dealBtn.addEventListener('click', function(e) {
+            if (currentTab === 'buy' || currentTab === 'sell') {
+                const container = currentTab === 'buy' ? buyContainer : sellContainer;
+                let hasData = false;
+
+                container.querySelectorAll('.item-card').forEach(card => {
+                    const qInput = card.querySelector('.quantity');
+                    const pInput = card.querySelector('.price');
+                    const q = parseInt(qInput.value) || 0;
+                    const p = parseInt(pInput.value) || 0;
+                    if (q > 0 && p > 0) {
+                        hasData = true;
+                        const id = card.dataset.id;
+                        const item = ITEMS.find(it => it.id === id);
+                        const total = q * p;
+                        const record = {
+                            id: id,
+                            name: item.name,
+                            quantity: q,
+                            price: p,
+                            total: total,
+                            timestamp: new Date()
+                        };
+
+                        if (currentTab === 'buy') {
+                            buyHistory.push(record);
+                        } else {
+                            sellHistory.push(record);
+                        }
+                    }
+                });
+
+                if (hasData) {
+                    saveToStorage();
+                    showToast(`✅ Сделка по ${currentTab === 'buy' ? 'покупке' : 'продаже'} зафиксирована!`);
+                    if (currentTab === 'profit') {
+                        renderProfitReport();
+                    }
+                } else {
+                    showToast('⚠️ Введите количество и цену хотя бы для одного предмета.', true);
+                }
+            }
+        });
+
+        // Очистка полей
+        clearBtn.addEventListener('click', () => {
+            const container = currentTab === 'buy' ? buyContainer : sellContainer;
+            container.querySelectorAll('.quantity').forEach(input => {
+                input.value = '';
+                input.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Копирование
+        copyBtn.addEventListener('click', async () => {
+            const text = totalCostElement.textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                const original = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✓';
+                setTimeout(() => copyBtn.innerHTML = original, 1000);
+            } catch (e) {
+                showToast('Не удалось скопировать.', true);
+            }
+        });
+
+        // Кнопка "Выбор предметов"
+        toggleSelectorBtn.addEventListener('click', () => {
+            const isExpanded = selectorContainer.style.display === 'block';
+            selectorContainer.style.display = isExpanded ? 'none' : 'block';
+
+            if (!isExpanded) {
+                renderSelector();
+            }
+
+            toggleSelectorBtn.innerHTML = isExpanded
+                ? 'Выбор предметов'
+                : 'Выбор предметов ▲';
+        });
+
+        // Инициализация
+        loadFromStorage(); // ← ЗАГРУЖАЕМ ДАННЫЕ
+        renderSelector();
+        renderActiveItems();
     </script>
 </body>
 </html>
