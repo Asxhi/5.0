@@ -95,7 +95,7 @@
     </div>
 
     <script>
-        const ITEMS = [
+        const items = [
             { id: 'dust', name: 'Аномальная пыль', price: 270, icon: 'anomalnaya-pyl.png' },
             { id: 'tool', name: 'Мультитул', price: 5000, icon: 'multitul.png' },
             { id: 'yeast', name: 'Дрожжи', price: 1500, icon: 'drozhzhi.png' },
@@ -203,7 +203,7 @@
         // Рендер выбора предметов
         function renderSelector() {
             selectorList.innerHTML = '';
-            ITEMS.forEach(item => {
+            items.forEach(item => {
                 const toggle = document.createElement('div');
                 toggle.className = 'item-toggle';
                 toggle.dataset.id = item.id;
@@ -232,7 +232,7 @@
         function renderActiveItems() {
             buyContainer.innerHTML = '';
             sellContainer.innerHTML = '';
-            ITEMS.forEach(item => {
+            items.forEach(item => {
                 if (!activeItems.has(item.id)) return;
 
                 const buyCard = createItemCard(item, 'buy');
@@ -307,8 +307,8 @@
     const overallProfit = document.getElementById('overall-profit');
     
     // Если ITEMS не существует, выходим, чтобы не было ошибки
-    if (typeof ITEMS === 'undefined') {
-        console.error("Ошибка: массив ITEMS не найден!");
+    if (typeof items === 'undefined') {
+        console.error("Ошибка: массив items не найден!");
         profitDetails.innerHTML = '<p>Ошибка: список предметов не найден</p>';
         return;
     }
@@ -327,7 +327,7 @@
     overallProfit.innerHTML = `Общая прибыль: <span style="color:${totalProfit >= 0 ? '#40a040' : '#cc3333'}">${totalProfit.toLocaleString()} ₽</span>`;
 
     // Отрисовка списка
-    ITEMS.forEach(item => {
+    items.forEach(item => {
         const itemBuys = buyHistory.filter(r => r.id == item.id);
         const itemSells = sellHistory.filter(r => r.id == item.id);
 
@@ -404,7 +404,7 @@
                     if (q > 0 && p > 0) {
                         hasData = true;
                         const id = card.dataset.id;
-                        const item = ITEMS.find(it => it.id === id);
+                        const item = items.find(it => it.id === id);
                         const total = q * p;
                         const record = {
                             id: id,
