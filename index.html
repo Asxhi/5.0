@@ -95,8 +95,6 @@
     </div>
 
     <script>
-        // ... (Ваш JavaScript код из предоставленного файла остается прежним) ...
-        // Убедитесь, что после вставки всего JS-кода внизу файла инициализация идет после загрузки DOM
         const ITEMS = [
             { id: 'dust', name: 'Аномальная пыль', price: 270, icon: 'anomalnaya-pyl.png' },
             { id: 'tool', name: 'Мультитул', price: 5000, icon: 'multitul.png' },
@@ -121,9 +119,436 @@
             { id: 'udar', name: 'Удар', price: 2000, icon: 'udar.png' }
         ];
 
-        // [Здесь вставьте остальную часть вашего JS-кода из исходного сообщения]
-        // Все функции (renderSelector, updateTotals, saveToStorage и т.д.) работают корректно, 
-        // теперь они просто смогут найти нужные элементы в HTML.
+        // Состояния
+        let activeItems = new Set();
+        let currentTab = 'buy';
+
+        // Отчёты
+        let buyHistory = [];
+        let sellHistory = [];
+
+        // DOM элементы
+        const selectorList = document.getElementById('items-list');
+        const buyContainer = document.getElementById('buy-container');
+        const sellContainer = document.getElementById('sell-container');
+        const totalCostElement = document.getElementById('total-cost');
+        const copyBtn = document.getElementById('copy-total');
+        const clearBtn = document.getElementById('clear-quantities');
+        const dealBtn = document.getElementById('deal-btn');
+        const toggleSelectorBtn = document.getElementById('toggle-selector-btn');
+        const selectorContainer = document.getElementById('selector-container');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const profitSection = document.getElementById('profit-section');
+        const overallProfit = document.getElementById('overall-profit');
+        const profitDetails = document.getElementById('profit-details');
+
+        // === РАБОТА С LOCALSTORAGE ===
+        function saveToStorage() {
+            try {
+                localStorage.setItem('activeItems', JSON.stringify([...activeItems]));
+                localStorage.setItem('buyHistory', JSON.stringify(buyHistory));
+                localStorage.setItem('sellHistory', JSON.stringify(sellHistory));
+            } catch (e) {
+                console.warn('Не удалось сохранить данные:', e);
+            }
+        }
+
+        function loadFromStorage() {
+            try {
+                const savedActive = localStorage.getItem('activeItems');
+                const savedBuy = localStorage.getItem('buyHistory');
+                const savedSell = localStorage.getItem('sellHistory');
+
+                if (savedActive) {
+                    activeItems = new Set(JSON.parse(savedActive));
+                }
+                if (savedBuy) {
+                    buyHistory = JSON.parse(savedBuy);
+                }
+                if (savedSell) {
+                    sellHistory = JSON.parse(savedSell);
+                }
+            } catch (e) {
+                console.warn('Не удалось загрузить данные:', e);
+                localStorage.removeItem('activeItems');
+                localStorage.removeItem('buyHistory');
+                localStorage.removeItem('sellHistory');
+            }
+        }
+
+        // Переключение вкладок
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTab = btn.dataset.tab;
+
+                buyContainer.style.display = 'none';
+                sellContainer.style.display = 'none';
+                profitSection.classList.remove('active');
+
+                if (currentTab === 'buy') {
+                    buyContainer.style.display = 'grid';
+                    updateTotal('buy');
+                } else if (currentTab === 'sell') {
+                    sellContainer.style.display = 'grid';
+                    updateTotal('sell');
+                } else if (currentTab === 'profit') {
+                    profitSection.classList.add('active');
+                    renderProfitReport();
+                }
+            });
+        });
+
+        // Рендер выбора предметов
+        function renderSelector() {
+            selectorList.innerHTML = '';
+            ITEMS.forEach(item => {
+                const toggle = document.createElement('div');
+                toggle.className = 'item-toggle';
+                toggle.dataset.id = item.id;
+                toggle.textContent = item.name;
+
+                if (activeItems.has(item.id)) {
+                    toggle.classList.add('selected');
+                }
+
+                toggle.addEventListener('click', () => {
+                    if (activeItems.has(item.id)) {
+                        activeItems.delete(item.id);
+                        toggle.classList.remove('selected');
+                    } else {
+                        activeItems.add(item.id);
+                        toggle.classList.add('selected');
+                    }
+                    renderActiveItems();
+                });
+
+                selectorList.appendChild(toggle);
+            });
+        }
+
+        // Рендер активных предметов
+        function renderActiveItems() {
+            buyContainer.innerHTML = '';
+            sellContainer.innerHTML = '';
+            ITEMS.forEach(item => {
+                if (!activeItems.has(item.id)) return;
+
+                const buyCard = createItemCard(item, 'buy');
+                buyContainer.appendChild(buyCard);
+
+                const sellCard = createItemCard(item, 'sell');
+                sellContainer.appendChild(sellCard);
+            });
+            updateTotal(currentTab === 'profit' ? 'buy' : currentTab);
+            saveToStorage(); // Сохраняем при изменении активных предметов
+        }
+
+        function createItemCard(item, mode) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.id = item.id;
+
+            card.innerHTML = `
+                <div class="item-header">
+                    <div class="item-icon" style="background-image: url('${item.icon}')"></div>
+                    <div class="item-name">${item.name}</div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">${mode === 'buy' ? 'Куплено' : 'Продано'}:</label>
+                    <input type="number" class="input-field quantity" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Цена:</label>
+                    <input type="number" class="input-field price" value="${item.price}" min="0" step="100">
+                </div>
+                <div class="result">0</div>
+                <div class="contacts">Контакты или заметки...</div>
+            `;
+
+            const qInput = card.querySelector('.quantity');
+            const pInput = card.querySelector('.price');
+            const result = card.querySelector('.result');
+
+            qInput.addEventListener('focus', () => qInput.select());
+
+            const update = () => {
+                const q = parseInt(qInput.value) || 0;
+                const p = parseInt(pInput.value) || 0;
+                const subtotal = q * p;
+                result.textContent = subtotal.toLocaleString('ru-RU').replace(/ /g, ' ');
+                if (mode === 'buy' && currentTab === 'buy') {
+                    updateTotal('buy');
+                } else if (mode === 'sell' && currentTab === 'sell') {
+                    updateTotal('sell');
+                }
+            };
+
+            qInput.addEventListener('input', update);
+            pInput.addEventListener('input', update);
+
+            return card;
+        }
+
+        function updateTotal(mode) {
+            let total = 0;
+            const container = mode === 'buy' ? buyContainer : sellContainer;
+            container.querySelectorAll('.result').forEach(el => {
+                const valStr = el.textContent.replace(/\s/g, '');
+                const val = parseInt(valStr) || 0;
+                total += val;
+            });
+            totalCostElement.textContent = total;
+        }
+
+        // === ОБНОВЛЁННАЯ ФУНКЦИЯ ОТЧЁТА С УДАЛЕНИЕМ ===
+        function renderProfitReport() {
+            const itemStats = {};
+
+            ITEMS.forEach(item => {
+                itemStats[item.id] = {
+                    id: item.id,
+                    name: item.name,
+                    icon: item.icon,
+                    boughtQty: 0,
+                    boughtTotal: 0,
+                    soldQty: 0,
+                    soldTotal: 0,
+                    buyRecords: [],
+                    sellRecords: []
+                };
+            });
+
+            buyHistory.forEach((record, index) => {
+                if (itemStats[record.id]) {
+                    itemStats[record.id].boughtQty += record.quantity;
+                    itemStats[record.id].boughtTotal += record.total;
+                    itemStats[record.id].buyRecords.push({ ...record, type: 'buy', globalIndex: index });
+                }
+            });
+
+            sellHistory.forEach((record, index) => {
+                if (itemStats[record.id]) {
+                    itemStats[record.id].soldQty += record.quantity;
+                    itemStats[record.id].soldTotal += record.total;
+                    itemStats[record.id].sellRecords.push({ ...record, type: 'sell', globalIndex: index });
+                }
+            });
+
+            const totalBought = Object.values(itemStats).reduce((sum, item) => sum + item.boughtTotal, 0);
+            const totalSold = Object.values(itemStats).reduce((sum, item) => sum + item.soldTotal, 0);
+            const totalProfit = totalSold - totalBought;
+
+            overallProfit.textContent = `Общая прибыль: ${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString('ru-RU')} ₽`;
+            if (totalProfit >= 0) {
+                overallProfit.className = 'overall-profit profit-positive';
+            } else {
+                overallProfit.className = 'overall-profit profit-negative';
+            }
+
+            const relevantItems = Object.values(itemStats).filter(item =>
+                item.boughtQty > 0 || item.soldQty > 0
+            );
+
+            relevantItems.sort((a, b) => {
+                const profitA = a.soldTotal - a.boughtTotal;
+                const profitB = b.soldTotal - b.boughtTotal;
+                return profitB - profitA;
+            });
+
+            if (relevantItems.length === 0) {
+                profitDetails.innerHTML = '<div class="no-data">Нет данных. Совершите сделку в разделе "Покупка" или "Продажа"</div>';
+                return;
+            }
+
+            // Очищаем контейнер и создаем сетку
+            profitDetails.innerHTML = '';
+            const grid = document.createElement('div');
+            grid.className = 'profit-items-grid';
+
+            relevantItems.forEach(item => {
+                const profit = item.soldTotal - item.boughtTotal;
+                const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+
+                // Генерируем список сделок
+                const allRecords = [...item.buyRecords, ...item.sellRecords].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                let recordsHtml = '';
+                allRecords.forEach(rec => {
+                    const typeLabel = rec.type === 'buy' ? 'Покупка' : 'Продажа';
+                    recordsHtml += `
+                        <div class="profit-line">${typeLabel}: ${rec.quantity} × ${rec.price} ₽ = ${rec.total} ₽</div>
+                    `;
+                });
+
+                // Создаем карточку
+                const card = document.createElement('div');
+                card.className = 'profit-item';
+
+                card.innerHTML = `
+                    <div class="profit-item-name">
+                        <div class="item-icon-small" style="background-image: url('${item.icon}')"></div>
+                        <span>${item.name}</span>
+                    </div>
+                    <div class="profit-stats">
+                        Куплено: ${item.boughtQty} шт. | Продано: ${item.soldQty} шт.<br>
+                        Потрачено: ${item.boughtTotal.toLocaleString('ru-RU')} ₽ | Получено: ${item.soldTotal.toLocaleString('ru-RU')} ₽
+                    </div>
+                    <div class="profit-line profit-amount ${profitClass}">
+                        Прибыль: ${profit >= 0 ? '+' : ''}${profit.toLocaleString('ru-RU')} ₽
+                    </div>
+                    <div class="profit-records-list" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        ${recordsHtml}
+                    </div>
+                    <button class="delete-record-btn" data-item-id="${item.id}" title="Удалить все сделки по этому предмету">🗑️</button>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            profitDetails.appendChild(grid);
+
+            // Обработчик удаления ВСЕХ сделок по предмету
+            document.querySelectorAll('.delete-record-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.dataset.itemId;
+
+                    // Фильтруем истории
+                    buyHistory = buyHistory.filter(record => record.id !== itemId);
+                    sellHistory = sellHistory.filter(record => record.id !== itemId);
+
+                    saveToStorage();
+                    renderProfitReport();
+                    showToast(`Все сделки по "${ITEMS.find(i => i.id === itemId)?.name}" удалены.`, true);
+                });
+            });
+        }
+
+        // === Функция тоста ===
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.background = isError ? 'rgba(255, 87, 34, 0.9)' : 'rgba(255, 42, 109, 0.9)';
+            toast.style.color = 'white';
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+            }, 1800);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // === Ховер-эффект с пузырьками ===
+        dealBtn.addEventListener('mouseenter', function(e) {
+            const rect = this.getBoundingClientRect();
+            for (let i = 0; i < 6; i++) {
+                const bubble = document.createElement('span');
+                bubble.classList.add('bubble');
+                bubble.style.left = (e.clientX - rect.left) + 'px';
+                bubble.style.top = (e.clientY - rect.top) + 'px';
+                this.appendChild(bubble);
+                setTimeout(() => {
+                    if (bubble.parentNode === this) {
+                        bubble.remove();
+                    }
+                }, 600);
+            }
+        });
+
+        // === Обработчик клика — фиксирует сделку ===
+        dealBtn.addEventListener('click', function(e) {
+            if (currentTab === 'buy' || currentTab === 'sell') {
+                const container = currentTab === 'buy' ? buyContainer : sellContainer;
+                let hasData = false;
+
+                container.querySelectorAll('.item-card').forEach(card => {
+                    const qInput = card.querySelector('.quantity');
+                    const pInput = card.querySelector('.price');
+                    const q = parseInt(qInput.value) || 0;
+                    const p = parseInt(pInput.value) || 0;
+                    if (q > 0 && p > 0) {
+                        hasData = true;
+                        const id = card.dataset.id;
+                        const item = ITEMS.find(it => it.id === id);
+                        const total = q * p;
+                        const record = {
+                            id: id,
+                            name: item.name,
+                            quantity: q,
+                            price: p,
+                            total: total,
+                            timestamp: new Date()
+                        };
+
+                        if (currentTab === 'buy') {
+                            buyHistory.push(record);
+                        } else {
+                            sellHistory.push(record);
+                        }
+                    }
+                });
+
+                if (hasData) {
+                    saveToStorage();
+                    showToast(`✅ Сделка по ${currentTab === 'buy' ? 'покупке' : 'продаже'} зафиксирована!`);
+                    if (currentTab === 'profit') {
+                        renderProfitReport();
+                    }
+                } else {
+                    showToast('⚠️ Введите количество и цену хотя бы для одного предмета.', true);
+                }
+            }
+        });
+
+        // Очистка полей
+        clearBtn.addEventListener('click', () => {
+            const container = currentTab === 'buy' ? buyContainer : sellContainer;
+            container.querySelectorAll('.quantity').forEach(input => {
+                input.value = '';
+                input.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Копирование
+        copyBtn.addEventListener('click', async () => {
+            const text = totalCostElement.textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                const original = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✓';
+                setTimeout(() => copyBtn.innerHTML = original, 1000);
+            } catch (e) {
+                showToast('Не удалось скопировать.', true);
+            }
+        });
+
+        // Кнопка "Выбор предметов"
+        toggleSelectorBtn.addEventListener('click', () => {
+            const isExpanded = selectorContainer.style.display === 'block';
+            selectorContainer.style.display = isExpanded ? 'none' : 'block';
+
+            if (!isExpanded) {
+                renderSelector();
+            }
+
+            toggleSelectorBtn.innerHTML = isExpanded
+                ? 'Выбор предметов'
+                : 'Выбор предметов ▲';
+        });
+
+        // Инициализация
+        loadFromStorage(); // ← ЗАГРУЖАЕМ ДАННЫЕ
+        renderSelector();
+        renderActiveItems();
     </script>
 </body>
 </html>
