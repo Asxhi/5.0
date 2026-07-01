@@ -302,11 +302,10 @@
             totalCostElement.textContent = total;
         }
 
-        // === ОБНОВЛЁННАЯ ФУНКЦИЯ ОТЧЁТА С УДАЛЕНИЕМ ===
         function renderProfitReport() {
     const profitDetails = document.getElementById('profit-details');
     const overallProfit = document.getElementById('overall-profit');
-    profitDetails.innerHTML = '';
+    profitDetails.innerHTML = ''; // Очищаем список перед отрисовкой
 
     const buyHistory = JSON.parse(localStorage.getItem('buyHistory') || '[]');
     const sellHistory = JSON.parse(localStorage.getItem('sellHistory') || '[]');
@@ -314,32 +313,54 @@
     let totalBought = 0;
     let totalSold = 0;
 
-    // Считаем покупки (используем универсальные ключи, проверь свои!)
-    buyHistory.forEach(r => {
-        // Замени 'quantity' и 'price' на те названия, которые ты увидел в консоли (пункт 2 выше)
-        const q = Number(r.quantity || r.qty || 0); 
-        const p = Number(r.price || r.p || 0);
-        totalBought += (q * p);
-    });
-
-    // Считаем продажи
-    sellHistory.forEach(r => {
-        const q = Number(r.quantity || r.qty || 0);
-        const p = Number(r.price || r.p || 0);
-        totalSold += (q * p);
-    });
+    // Считаем общую прибыль для заголовка
+    buyHistory.forEach(r => totalBought += (Number(r.quantity) * Number(r.price)));
+    sellHistory.forEach(r => totalSold += (Number(r.quantity) * Number(r.price)));
 
     const totalProfit = totalSold - totalBought;
+    overallProfit.innerHTML = `Общая прибыль: <span style="color:${totalProfit >= 0 ? '#40a040' : '#cc3333'}">${totalProfit.toLocaleString()} ₽</span>`;
 
-    // Вывод
-    if (isNaN(totalProfit)) {
-        overallProfit.textContent = "Ошибка данных";
-    } else {
-        overallProfit.textContent = `Общая прибыль: ${totalProfit} ₽`;
-        overallProfit.style.color = totalProfit >= 0 ? '#40a040' : '#cc3333';
-    }
+    // Рендерим историю сделок по предметам
+    ITEMS.forEach(item => {
+        const itemBuys = buyHistory.filter(r => r.id === item.id);
+        const itemSells = sellHistory.filter(r => r.id === item.id);
+
+        if (itemBuys.length === 0 && itemSells.length === 0) return; // Пропускаем пустые
+
+        // Создаем карточку предмета
+        const card = document.createElement('div');
+        card.className = 'profit-item';
+        card.innerHTML = `
+            <div class="profit-item-name">
+                <div class="item-icon-small" style="background-image: url('${item.icon}')"></div>
+                ${item.name}
+            </div>
+            <div class="profit-records-list"></div>
+        `;
+
+        const listContainer = card.querySelector('.profit-records-list');
+
+        // Добавляем сделки покупки
+        itemBuys.forEach(r => {
+            const row = document.createElement('div');
+            row.className = 'profit-line';
+            row.style.color = '#cc3333'; // Красный для покупки
+            row.textContent = `Куплено: ${r.quantity} шт. по ${r.price} ₽`;
+            listContainer.appendChild(row);
+        });
+
+        // Добавляем сделки продажи
+        itemSells.forEach(r => {
+            const row = document.createElement('div');
+            row.className = 'profit-line';
+            row.style.color = '#40a040'; // Зеленый для продажи
+            row.textContent = `Продано: ${r.quantity} шт. по ${r.price} ₽`;
+            listContainer.appendChild(row);
+        });
+
+        profitDetails.appendChild(card);
+    });
 }
-
         // === Функция тоста ===
         function showToast(message, isError = false) {
             const existing = document.querySelector('.toast');
