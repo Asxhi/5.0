@@ -2,143 +2,154 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>STALZONE PDA Terminal</title>
+    <title>PDA: STALZONE TERMINAL</title>
     <style>
         :root {
-            --bg-color: #0d0f0d;
-            --card-bg: #1a1e1a;
-            --border-color: #4a5d4a;
-            --accent-green: #39ff14;
-            --accent-amber: #ffb700;
-            --text-color: #c0c0c0;
+            --bg: #0d100d;
+            --panel: #151a15;
+            --border: #3e483e;
+            --text: #a8b8a8;
+            --green: #40a040;
+            --amber: #d4a017;
+            --red: #cc3333;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
-            background-image: radial-gradient(circle at 50% 50%, #151a15 0%, #0d0f0d 100%);
+            margin: 0;
+            background-image: linear-gradient(rgba(0,0,0,0.4) 1px, transparent 1px);
+            background-size: 100% 4px;
         }
 
-        /* Заголовок-терминал */
-        .header h1 {
-            color: var(--accent-green);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
-            border-bottom: 2px solid var(--accent-green);
-            display: inline-block;
-            padding-bottom: 5px;
-        }
+        h1 { color: var(--green); text-align: center; text-transform: uppercase; border-bottom: 2px solid var(--green); padding-bottom: 10px; }
 
-        /* Кнопки в стиле ПДА */
-        .tab-btn {
-            background: #000;
-            border: 1px solid var(--accent-green);
-            color: var(--accent-green);
-            padding: 10px 20px;
-            cursor: pointer;
-            margin: 5px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .tab-btn.active {
-            background: var(--accent-green);
-            color: #000;
-        }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: #000; border: 1px solid var(--green); color: var(--green); padding: 8px 15px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .tab-btn.active { background: var(--green); color: #000; }
 
-        /* Карточки предметов */
-        .item-card {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            padding: 15px;
-            border-radius: 0;
-            position: relative;
-        }
-        .item-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 10px; height: 10px;
-            border-top: 2px solid var(--accent-green);
-            border-left: 2px solid var(--accent-green);
-        }
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
 
-        input {
-            background: #000;
-            border: 1px solid var(--border-color);
-            color: var(--accent-amber);
-            padding: 5px;
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .deal-btn-new {
-            background: var(--accent-amber);
-            color: #000;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .profit-records-list {
-            max-height: 120px;
-            overflow-y: auto;
-            border: 1px solid #333;
-            background: #0a0c0a;
-            padding: 5px;
-            font-size: 0.8rem;
-        }
+        .item-card { background: var(--panel); border: 2px solid var(--border); padding: 15px; }
+        .item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .item-icon { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border: 1px solid var(--border); }
         
-        .profit-records-list::-webkit-scrollbar { width: 4px; }
-        .profit-records-list::-webkit-scrollbar-thumb { background: var(--accent-green); }
+        input { background: #000; border: 1px solid var(--border); color: var(--amber); padding: 5px; width: 100%; margin-top: 5px; }
+        
+        .deal-btn { background: var(--amber); color: #000; border: none; padding: 10px; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        
+        .profit-records-list { 
+            max-height: 120px; overflow-y: auto; border: 1px solid var(--border); 
+            background: #0a0a0a; padding: 5px; margin-top: 10px; font-size: 0.8rem;
+        }
+        .profit-records-list::-webkit-scrollbar { width: 5px; }
+        .profit-records-list::-webkit-scrollbar-thumb { background: var(--green); }
     </style>
 </head>
 <body>
 
-    <div class="header" style="text-align:center">
-        <h1>[PDA SYSTEM v2.0]</h1>
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="buy">Покупка</button>
-            <button class="tab-btn" data-tab="sell">Продажа</button>
-            <button class="tab-btn" data-tab="profit">Прибыль</button>
-        </div>
+    <h1>[PDA SYSTEM]</h1>
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="buy">Покупка</button>
+        <button class="tab-btn" data-tab="sell">Продажа</button>
+        <button class="tab-btn" data-tab="profit">Прибыль</button>
     </div>
 
-    <div id="main-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;"></div>
+    <div id="buy-container" class="container"></div>
+    <div id="sell-container" class="container" style="display:none;"></div>
+    
+    <div id="profit-section" class="container" style="display:none;"></div>
+
+    <div style="background: var(--panel); border: 2px solid var(--border); padding: 20px; margin-top: 20px; text-align: center;">
+        <button id="deal-btn" class="deal-btn">Зафиксировать сделку</button>
+        <div style="margin-top: 10px;">Итого: <span id="total-cost" style="color: var(--amber);">0</span></div>
+    </div>
 
     <script>
-        // Список предметов (как в твоем репозитории)
         const ITEMS = [
             { id: 'dust', name: 'Аномальная пыль', price: 270, icon: 'anomalnaya-pyl.png' },
             { id: 'tool', name: 'Мультитул', price: 5000, icon: 'multitul.png' },
             { id: 'yeast', name: 'Дрожжи', price: 1500, icon: 'drozhzhi.png' },
-            { id: 'hoof', name: 'Копыто сильного кабана', price: 3000, icon: 'kopyto-kabana.png' },
-            { id: 'bolts', name: 'Набор болтов', price: 8000, icon: 'nabor-boltov.png' },
-            { id: 'wormwood', name: 'Янтарная полынь', price: 10000, icon: 'yantarnaya-polyin.png' },
-            { id: 'chertocvet', name: 'Чертоцвет', price: 1000, icon: 'chertotsvet.png' },
-            { id: 'ammonia', name: 'Аммиак', price: 10000, icon: 'ammiak.png' },
-            { id: 'lemon', name: 'Мякоть лимонника', price: 1000, icon: 'myakot-limonnika.png' },
-            { id: 'slant', name: 'Мякоть сластены', price: 7000, icon: 'myakot-slasteny.png' },
-            { id: 'salt', name: 'Мякоть солевика', price: 1000, icon: 'myakot-solevika.png' },
-            { id: 'cube', name: 'Мякоть куборбуза', price: 3000, icon: 'myakot-kuborbuz.png' },
-            { id: 'spices', name: 'Набор специй', price: 1500, icon: 'nabor-spetsiy.png' },
-            { id: 'plasma', name: 'Аномальная плазма', price: 1500, icon: 'anomalnaya-plazma.png' },
-            { id: 'gnosis', name: 'Гнозис', price: 100, icon: 'gnosis.png' },
-            { id: 'fish', name: 'Полутухлая рыба', price: 2000, icon: 'polutukhlaya-ryba.png' },
-            { id: 'millet', name: 'Банка с пшеном', price: 3000, icon: 'banka-s-pshenom.png' },
-            { id: 'solution', name: 'Колба с раствором', price: 2000, icon: 'kolba-s-rastvorom.png' },
-            { id: 'acid', name: 'Азотная кислота', price: 3000, icon: 'azotnaya-kislota.png' },
-            { id: 'meat', name: 'Мясо', price: 1500, icon: 'myaso.png' },
-            { id: 'udar', name: 'Удар', price: 2000, icon: 'udar.png' }
+            { id: 'fish', name: 'Полутухлая рыба', price: 2000, icon: 'polutukhlaya-ryba.png' }
+            // Добавь свои предметы сюда
         ];
 
-        // ... Сюда нужно вставить всю твою логику обработки данных (history, render и т.д.) ...
-        // Я сохранил структуру CSS, которая обеспечит нужный дизайн.
+        let buyHistory = JSON.parse(localStorage.getItem('buyHistory') || '[]');
+        let sellHistory = JSON.parse(localStorage.getItem('sellHistory') || '[]');
+
+        function render() {
+            const buyContainer = document.getElementById('buy-container');
+            const sellContainer = document.getElementById('sell-container');
+            const profitSection = document.getElementById('profit-section');
+            
+            buyContainer.innerHTML = ''; sellContainer.innerHTML = ''; profitSection.innerHTML = '';
+
+            ITEMS.forEach(item => {
+                // Карточки покупки/продажи
+                [buyContainer, sellContainer].forEach((cont, idx) => {
+                    const mode = idx === 0 ? 'buy' : 'sell';
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div class="item-header"><div class="item-icon" style="background-image:url('icons/${item.icon}')"></div><b>${item.name}</b></div>
+                        <input type="number" class="qty" placeholder="Кол-во" data-id="${item.id}">
+                        <input type="number" class="price" value="${item.price}" data-id="${item.id}">
+                    `;
+                    cont.appendChild(card);
+                });
+            });
+
+            // Рендер прибыли
+            renderProfit(profitSection);
+        }
+
+        function renderProfit(cont) {
+            ITEMS.forEach(item => {
+                const b = buyHistory.filter(x => x.id === item.id);
+                const s = sellHistory.filter(x => x.id === item.id);
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <b>${item.name}</b>
+                    <div class="profit-records-list">
+                        ${b.map(x => `<div>ПОКУПКА: ${x.q}x${x.p}</div>`).join('')}
+                        ${s.map(x => `<div>ПРОДАЖА: ${x.q}x${x.p}</div>`).join('')}
+                    </div>
+                `;
+                cont.appendChild(card);
+            });
+        }
+
+        document.getElementById('deal-btn').onclick = () => {
+            const activeCont = document.querySelector('.container[style*="display: block"]') || document.querySelector('.container:not([style*="display: none"])');
+            activeCont.querySelectorAll('.item-card').forEach(card => {
+                const q = card.querySelector('.qty').value;
+                const p = card.querySelector('.price').value;
+                if(q && p) {
+                    const id = card.querySelector('.qty').dataset.id;
+                    const hist = activeCont.id === 'buy-container' ? buyHistory : sellHistory;
+                    hist.push({id, q: parseInt(q), p: parseInt(p)});
+                }
+            });
+            localStorage.setItem('buyHistory', JSON.stringify(buyHistory));
+            localStorage.setItem('sellHistory', JSON.stringify(sellHistory));
+            alert('Сделка зафиксирована в базе PDA!');
+            render();
+        };
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('buy-container').style.display = btn.dataset.tab === 'buy' ? 'grid' : 'none';
+                document.getElementById('sell-container').style.display = btn.dataset.tab === 'sell' ? 'grid' : 'none';
+                document.getElementById('profit-section').style.display = btn.dataset.tab === 'profit' ? 'grid' : 'none';
+            };
+        });
+
+        render();
     </script>
 </body>
 </html>
