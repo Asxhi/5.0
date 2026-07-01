@@ -14,16 +14,7 @@
             --text: #a8b8a8;
         }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
-            margin: 0;
-            background-image: linear-gradient(rgba(0,0,0,0.4) 1px, transparent 1px);
-            background-size: 100% 4px;
-        }
-
+        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace; padding: 20px; margin: 0; background-image: linear-gradient(rgba(0,0,0,0.4) 1px, transparent 1px); background-size: 100% 4px; }
         h1 { color: var(--green); text-align: center; text-transform: uppercase; border-bottom: 2px solid var(--green); padding-bottom: 10px; }
 
         /* Вкладки */
@@ -31,31 +22,38 @@
         .tab-btn { background: #000; border: 1px solid var(--green); color: var(--green); padding: 8px 15px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .tab-btn.active { background: var(--green); color: #000; }
 
-        /* Новые стили для прибыли */
+        /* Прибыль и Сетка */
         .profit-positive { color: var(--green); }
         .profit-negative { color: var(--red); }
+        .profit-items-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+        .profit-item { background: var(--panel); border: 1px solid var(--border); padding: 15px; }
+        .profit-item-name { display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .item-icon-small { width: 30px; height: 30px; background-size: contain; background-repeat: no-repeat; }
+        .profit-stats { font-size: 0.85rem; margin-bottom: 10px; }
+        .profit-amount { font-weight: bold; font-size: 1.1rem; }
+        .delete-record-btn { background: transparent; border: none; color: var(--red); cursor: pointer; float: right; }
 
-        /* Сектор выбора */
+        /* Тосты (уведомления) */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 4px; z-index: 1000; transition: all 0.3s; }
+
+        /* Пузырьки (эффект кнопки) */
+        .deal-btn-new { position: relative; overflow: hidden; background: var(--amber); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .bubble { position: absolute; width: 10px; height: 10px; background: rgba(255,255,255,0.5); border-radius: 50%; pointer-events: none; animation: bubble-fade 0.6s linear forwards; }
+        @keyframes bubble-fade { to { transform: scale(4); opacity: 0; } }
+
+        /* Остальное */
         .selector { background: var(--panel); padding: 15px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; }
         .items-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .item-toggle { border: 1px solid var(--green); padding: 5px 10px; cursor: pointer; color: var(--green); font-size: 0.8rem; }
         .item-toggle.selected { background: var(--green); color: #000; font-weight: bold; }
-
-        /* Карточки */
         .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         .item-card { background: var(--panel); border: 1px solid var(--border); padding: 15px; }
         .item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .item-icon { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border: 1px solid var(--border); background-color: #222;}
         input { background: #000; border: 1px solid var(--border); color: var(--amber); padding: 5px; width: 100%; margin-top: 5px; }
         .result { color: var(--amber); font-weight: bold; margin-top: 10px; text-align: right; }
-
-        /* Подвал */
         .total-section { background: var(--panel); border: 1px solid var(--border); padding: 20px; margin-top: 20px; text-align: center; }
-        .deal-btn-new { background: var(--amber); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .copy-btn, .clear-btn { background: #000; border: 1px solid var(--green); color: var(--green); padding: 5px 10px; cursor: pointer; margin-left: 5px; }
-
-        /* История */
-        .profit-records-list { max-height: 120px; overflow-y: auto; border: 1px solid var(--border); background: #0a0a0a; padding: 5px; margin-top: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -68,7 +66,6 @@
         <button class="tab-btn" data-tab="profit">Прибыль</button>
     </div>
 
-    <!-- ДОБАВЛЕНА КНОПКА, КОТОРОЙ НЕ ХВАТАЛО -->
     <div style="text-align: center; margin-bottom: 10px;">
         <button class="tab-btn" id="toggle-selector-btn">Выбор предметов</button>
     </div>
