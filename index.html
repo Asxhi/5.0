@@ -305,59 +305,49 @@
         function renderProfitReport() {
     const profitDetails = document.getElementById('profit-details');
     const overallProfit = document.getElementById('overall-profit');
-    profitDetails.innerHTML = ''; // Очищаем список перед отрисовкой
+    
+    // Если ITEMS не существует, выходим, чтобы не было ошибки
+    if (typeof ITEMS === 'undefined') {
+        console.error("Ошибка: массив ITEMS не найден!");
+        profitDetails.innerHTML = '<p>Ошибка: список предметов не найден</p>';
+        return;
+    }
 
+    profitDetails.innerHTML = '';
     const buyHistory = JSON.parse(localStorage.getItem('buyHistory') || '[]');
     const sellHistory = JSON.parse(localStorage.getItem('sellHistory') || '[]');
 
+    // Расчет прибыли
     let totalBought = 0;
     let totalSold = 0;
-
-    // Считаем общую прибыль для заголовка
-    buyHistory.forEach(r => totalBought += (Number(r.quantity) * Number(r.price)));
-    sellHistory.forEach(r => totalSold += (Number(r.quantity) * Number(r.price)));
+    buyHistory.forEach(r => totalBought += (Number(r.quantity || 0) * Number(r.price || 0)));
+    sellHistory.forEach(r => totalSold += (Number(r.quantity || 0) * Number(r.price || 0)));
 
     const totalProfit = totalSold - totalBought;
     overallProfit.innerHTML = `Общая прибыль: <span style="color:${totalProfit >= 0 ? '#40a040' : '#cc3333'}">${totalProfit.toLocaleString()} ₽</span>`;
 
-    // Рендерим историю сделок по предметам
+    // Отрисовка списка
     ITEMS.forEach(item => {
-        const itemBuys = buyHistory.filter(r => r.id === item.id);
-        const itemSells = sellHistory.filter(r => r.id === item.id);
+        const itemBuys = buyHistory.filter(r => r.id == item.id);
+        const itemSells = sellHistory.filter(r => r.id == item.id);
 
-        if (itemBuys.length === 0 && itemSells.length === 0) return; // Пропускаем пустые
+        if (itemBuys.length === 0 && itemSells.length === 0) return;
 
-        // Создаем карточку предмета
         const card = document.createElement('div');
         card.className = 'profit-item';
-        card.innerHTML = `
-            <div class="profit-item-name">
-                <div class="item-icon-small" style="background-image: url('${item.icon}')"></div>
-                ${item.name}
-            </div>
-            <div class="profit-records-list"></div>
-        `;
-
-        const listContainer = card.querySelector('.profit-records-list');
-
-        // Добавляем сделки покупки
-        itemBuys.forEach(r => {
+        card.innerHTML = `<div style="font-weight:bold; color:var(--amber); margin-top:10px;">${item.name}</div>`;
+        
+        const listContainer = document.createElement('div');
+        listContainer.className = 'profit-records-list';
+        
+        [...itemBuys, ...itemSells].forEach(r => {
             const row = document.createElement('div');
-            row.className = 'profit-line';
-            row.style.color = '#cc3333'; // Красный для покупки
-            row.textContent = `Куплено: ${r.quantity} шт. по ${r.price} ₽`;
+            row.style.color = r.price ? '#cc3333' : '#40a040'; // Логика цвета
+            row.textContent = `${r.type === 'buy' ? 'Куплено' : 'Продано'}: ${r.quantity} шт. по ${r.price} ₽`;
             listContainer.appendChild(row);
         });
-
-        // Добавляем сделки продажи
-        itemSells.forEach(r => {
-            const row = document.createElement('div');
-            row.className = 'profit-line';
-            row.style.color = '#40a040'; // Зеленый для продажи
-            row.textContent = `Продано: ${r.quantity} шт. по ${r.price} ₽`;
-            listContainer.appendChild(row);
-        });
-
+        
+        card.appendChild(listContainer);
         profitDetails.appendChild(card);
     });
 }
